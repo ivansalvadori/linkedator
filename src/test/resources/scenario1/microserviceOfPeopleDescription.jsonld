@@ -1,0 +1,29 @@
+{
+  "uriBase": "10.1.1.1",
+  "semanticResources": [
+    {
+      "entity": "http://schema.org/Person",
+      "properties": [
+        "http://ssp-ontology.com#numeroRg",
+        "http://ssp-ontology.com#nome",
+        "http://ssp-ontology.com#dataNascimento"
+      ],
+      "uriTemplates": [
+        {
+          "method": "GET",
+          "uri": "vitima/{x}",
+          "parameters": {
+            "x": "http://ssp-ontology.com#numeroRg"
+          }
+        },
+        {
+          "method": "GET",
+          "uri": "vitima/{x}",
+          "parameters": {
+            "x": "http://ssp-ontology.com#dataNascimento"
+          }
+        }
+      ]
+    }
+  ]
+}

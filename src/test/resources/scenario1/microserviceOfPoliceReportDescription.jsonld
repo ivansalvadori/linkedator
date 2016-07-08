@@ -1,0 +1,22 @@
+{
+  "uriBase": "10.1.1.2",
+  "semanticResources": [
+    {
+      "entity": "http://ssp-ontology.com#PoliceReport",
+      "properties": [
+        "http://ssp-ontology.com#numeroBoletim",
+        "http://ssp-ontology.com#dataOcorrencia",
+        "http://ssp-ontology.com#victim"
+      ],
+      "uriTemplates": [
+        {
+          "method": "GET",
+          "uri": "boletimHomicidio/{x}",
+          "parameters": {
+            "x": "http://ssp-ontology.com#numeroBoletim"
+          }
+        }
+      ]
+    }
+  ]
+}

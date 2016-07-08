@@ -1,0 +1,8 @@
+{
+  "@id": "http://ssp-ontology.com#PoliceReport",
+  "http://ssp-ontology.com#numeroBoletim": "123",
+  "http://ssp-ontology.com#dataOcorrencia": "10/10/2000",
+  "http://ssp-ontology.com#victim": {
+    "http://ssp-ontology.com#numeroRg": "123456"
+  }
+}
