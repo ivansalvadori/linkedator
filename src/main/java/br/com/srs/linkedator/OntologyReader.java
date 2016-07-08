@@ -1,4 +1,4 @@
-package br.com.srs.linkedador;
+package br.com.srs.linkedator;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package br.com.srs.linkedador.test;
+package br.com.srs.linkedator.test;
 
 import java.io.IOException;
 
@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.com.srs.linkedador.Linkedador;
-import br.com.srs.linkedador.SemanticMicroserviceDescription;
+import br.com.srs.linkedator.Linkedador;
+import br.com.srs.linkedator.SemanticMicroserviceDescription;
 
 public class LinkedatorTest {
 
