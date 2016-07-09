@@ -46,21 +46,19 @@ public class Linkedador {
 
             List<UriTemplate> uriTemplates = semanticResource.getUriTemplates();
             for (UriTemplate uriTemplate : uriTemplates) {
-                Map<String, String> parameters = uriTemplate.getParameters();
-                boolean uriTemplateResolvableFromResourceProperties = objectPropertyContent.containsAll(parameters.values());
+                boolean uriTemplateResolvableFromResourceProperties = objectPropertyContent.containsAll(uriTemplate.getParameters().values());
                 if (uriTemplateResolvableFromResourceProperties) {
                     JsonObject updatedRepresentation = new JsonObject();
                     Set<String> listAllPropertyIds = listAllPropertyIds(resourceRepresentation);
                     for (String propertyId : listAllPropertyIds) {
                         if(propertyId.endsWith(objectPropertyUri)){
-                            String link = resolveLink(range, objectPropertyValue, uriTemplate, parameters);
+                            String link = resolveLink(range, objectPropertyValue, uriTemplate);
                             updatedRepresentation.addProperty(propertyId, link);
                         }
                         else{
                             String value = JsonPath.read(resourceRepresentation, String.format("$['%s']", propertyId));
                             updatedRepresentation.addProperty(propertyId, value);
                         }
-                        
                     }
                      linkedResourceRepresentation = updatedRepresentation.toString();
                      break;
@@ -70,8 +68,9 @@ public class Linkedador {
         return linkedResourceRepresentation;
     }
 
-    private String resolveLink(OntResource range, Map<String, String> objectPropertyValue, UriTemplate uriTemplate, Map<String, String> parameters) {
+    private String resolveLink(OntResource range, Map<String, String> objectPropertyValue, UriTemplate uriTemplate) {
         String link = String.format("%s/%s", getMicroserviceUriBaseByEntity(range.getURI()), uriTemplate.getUri());
+        Map<String, String> parameters = uriTemplate.getParameters();
         Set<String> uriTemplateParams = parameters.keySet();
         for (String param : uriTemplateParams) {
             String uriPropertyOfParam = parameters.get(param);

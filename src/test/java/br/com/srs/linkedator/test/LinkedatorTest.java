@@ -3,6 +3,7 @@ package br.com.srs.linkedator.test;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -26,7 +27,7 @@ public class LinkedatorTest {
 
         String linkedRepresentation = linkedador.createLinks(policeReport);
         System.out.println(linkedRepresentation);
-
+        Assert.assertTrue(linkedRepresentation.contains("\"http://ssp-ontology.com#victim\":\"10.1.1.1/vitima/123456\""));
     }
 
 }
