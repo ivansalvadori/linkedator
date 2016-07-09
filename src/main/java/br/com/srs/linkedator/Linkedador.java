@@ -27,8 +27,67 @@ public class Linkedador {
 
     public String createLinks(String resourceRepresentation) {
         String linkedResourceRepresentation = resourceRepresentation;
-        String resourceRepresentationId = JsonPath.read(resourceRepresentation, "$['@id']");
-        System.out.println(resourceRepresentationId);
+        linkedResourceRepresentation = createExplicitLinks(resourceRepresentation);
+        linkedResourceRepresentation = createInferredLinks(linkedResourceRepresentation);
+
+        return linkedResourceRepresentation;
+    }
+
+    private String createInferredLinks(String resourceRepresentation) {
+        String linkedResourceRepresentation = resourceRepresentation;
+
+        List<ObjectProperty> applicableObjectProperties = new ArrayList<>();
+        String resourceRepresentationId = JsonPath.read(resourceRepresentation, "$['@type']");
+
+        /*
+         * finding all applicable obj-properties that have the representation id
+         * as domain
+         */
+        List<ObjectProperty> objectProperties = this.ontologyReader.getObjectProperties();
+        for (ObjectProperty objectProperty : objectProperties) {
+            if (objectProperty.getDomain().getURI().equalsIgnoreCase(resourceRepresentationId)) {
+                applicableObjectProperties.add(objectProperty);
+            }
+        }
+
+        for (ObjectProperty objectProperty : applicableObjectProperties) {
+            String objectPropertyRange = objectProperty.getRange().getURI();
+            SemanticResource semanticResource = getSemanticResourceByEntity(objectPropertyRange);
+
+            /*
+             * in case the range/domain os ah given obj-property have no
+             * implementation
+             */
+            if (semanticResource == null) {
+                continue;
+            }
+
+            List<UriTemplate> uriTemplates = semanticResource.getUriTemplates();
+            for (UriTemplate uriTemplate : uriTemplates) {
+                Map<String, String> objectPropertyValue = JsonPath.read(linkedResourceRepresentation, "$");
+                Set<String> objectPropertyContent = objectPropertyValue.keySet();
+                boolean uriTemplateResolvableFromResourceProperties = objectPropertyContent.containsAll(uriTemplate.getParameters().values());
+                if (uriTemplateResolvableFromResourceProperties) {
+                    String resolvedLink = resolveLink(semanticResource.getEntity(), objectPropertyValue, uriTemplate);
+                    JsonObject updatedRepresentation = new JsonObject();
+                    Set<String> listAllPropertyIds = listAllPropertyIds(linkedResourceRepresentation);
+                    for (String propertyId : listAllPropertyIds) {
+                        String value = JsonPath.read(linkedResourceRepresentation, String.format("$['%s']", propertyId));
+                        updatedRepresentation.addProperty(propertyId, value);
+
+                    }
+                    updatedRepresentation.addProperty(objectProperty.getURI(), resolvedLink);
+                    linkedResourceRepresentation = updatedRepresentation.toString();
+                    break;
+                }
+            }
+        }
+
+        return linkedResourceRepresentation;
+    }
+
+    private String createExplicitLinks(String resourceRepresentation) {
+        String linkedResourceRepresentation = resourceRepresentation;
 
         List<ObjectProperty> listObjectProperties = listObjectProperties(resourceRepresentation);
         for (ObjectProperty objectProperty : listObjectProperties) {
@@ -51,31 +110,30 @@ public class Linkedador {
                     JsonObject updatedRepresentation = new JsonObject();
                     Set<String> listAllPropertyIds = listAllPropertyIds(resourceRepresentation);
                     for (String propertyId : listAllPropertyIds) {
-                        if(propertyId.endsWith(objectPropertyUri)){
-                            String link = resolveLink(range, objectPropertyValue, uriTemplate);
+                        if (propertyId.endsWith(objectPropertyUri)) {
+                            String link = resolveLink(range.getURI(), objectPropertyValue, uriTemplate);
                             updatedRepresentation.addProperty(propertyId, link);
-                        }
-                        else{
+                        } else {
                             String value = JsonPath.read(resourceRepresentation, String.format("$['%s']", propertyId));
                             updatedRepresentation.addProperty(propertyId, value);
                         }
                     }
-                     linkedResourceRepresentation = updatedRepresentation.toString();
-                     break;
+                    linkedResourceRepresentation = updatedRepresentation.toString();
+                    break;
                 }
             }
         }
         return linkedResourceRepresentation;
     }
 
-    private String resolveLink(OntResource range, Map<String, String> objectPropertyValue, UriTemplate uriTemplate) {
-        String link = String.format("%s/%s", getMicroserviceUriBaseByEntity(range.getURI()), uriTemplate.getUri());
+    private String resolveLink(String rangeUri, Map<String, String> objectPropertyValue, UriTemplate uriTemplate) {
+        String link = String.format("%s/%s", getMicroserviceUriBaseByEntity(rangeUri), uriTemplate.getUri());
         Map<String, String> parameters = uriTemplate.getParameters();
         Set<String> uriTemplateParams = parameters.keySet();
         for (String param : uriTemplateParams) {
             String uriPropertyOfParam = parameters.get(param);
             String paramValuepresentedInResourceRep = objectPropertyValue.get(uriPropertyOfParam);
-            link = link.replace("{"+param+"}", paramValuepresentedInResourceRep);
+            link = link.replace("{" + param + "}", paramValuepresentedInResourceRep);
         }
         return link;
     }
@@ -93,7 +151,7 @@ public class Linkedador {
         return null;
 
     }
-    
+
     private String getMicroserviceUriBaseByEntity(String entity) {
         for (SemanticMicroserviceDescription semanticMicroserviceDescription : semanticMicroserviceDescriptions) {
             List<SemanticResource> semanticResources = semanticMicroserviceDescription.getSemanticResources();
