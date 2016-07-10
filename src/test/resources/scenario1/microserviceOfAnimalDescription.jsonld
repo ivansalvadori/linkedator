@@ -1,0 +1,22 @@
+{
+  "uriBase": "10.1.1.3",
+  "semanticResources": [
+    {
+      "entity": "http://schema.org/Animal",
+      "properties": [
+        "http://ssp-ontology.com#name",
+        "http://ssp-ontology.com#breed",
+        "http://ssp-ontology.com#petTrackeId"
+      ],
+      "uriTemplates": [
+          {
+          "method": "GET",
+          "uri": "pet/{x}",
+          "parameters": {
+            "x": "http://ssp-ontology.com#petTrackId"
+          }
+        }
+      ]
+    }
+  ]
+}

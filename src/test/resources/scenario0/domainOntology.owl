@@ -21,18 +21,15 @@
     <owl:ObjectProperty rdf:about="http://ssp-ontology.com#victim">
         <rdfs:domain rdf:resource="http://ssp-ontology.com#PoliceReport"/>
         <rdfs:range rdf:resource="http://schema.org/Person"/>
-        <rdfs:range rdf:resource="http://schema.org/Animal"/>
     </owl:ObjectProperty>
     
     <owl:ObjectProperty rdf:about="http://ssp-ontology.com#envolvedIn">
         <rdfs:domain rdf:resource="http://schema.org/Person"/>
         <rdfs:range rdf:resource="http://ssp-ontology.com#PoliceReport"/>
     </owl:ObjectProperty>
-    
-
+   
     <owl:Class rdf:about="http://ssp-ontology.com#PoliceReport"/>
     
-
 
 
 </rdf:RDF>
