@@ -41,7 +41,7 @@ public class LinkedatorTest {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/policeReport.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(policeReport);
         System.out.println(linkedRepresentation);
-        Assert.assertTrue(linkedRepresentation.contains("\"http://ssp-ontology.com#victim\":\"10.1.1.1/vitima/123456\""));
+        Assert.assertTrue(linkedRepresentation.contains("\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.1/vitima/123456\""));
     }
 
     @Test
@@ -52,5 +52,13 @@ public class LinkedatorTest {
         Assert.assertTrue(linkedRepresentation.contains("http://ssp-ontology.com#envolvedIn\":\"10.1.1.2/reports/13579"));
         Assert.assertTrue(linkedRepresentation.contains("http://ssp-ontology.com#ownerOf\":\"10.1.1.3/report/owner/13579"));
 
+    }
+
+    @Test
+    public void mustCreateExplicitArrayLinkInPoliceRepor() throws IOException {
+        String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/policeReportArrayVictim.jsonld"), "UTF-8");
+        String linkedRepresentation = linkedador.createLinks(policeReport);
+        System.out.println(linkedRepresentation);
+        Assert.assertTrue(linkedRepresentation.contains("\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.1/vitima/123456\""));
     }
 }
