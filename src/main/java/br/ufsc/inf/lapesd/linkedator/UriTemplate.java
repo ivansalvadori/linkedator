@@ -1,4 +1,4 @@
-package br.com.srs.linkedator;
+package br.ufsc.inf.lapesd.linkedator;
 
 import java.util.HashMap;
 import java.util.Map;
