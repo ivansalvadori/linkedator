@@ -18,12 +18,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jayway.jsonpath.JsonPath;
 
-public class Linkedador {
+public class Linkedator {
 
     private List<SemanticMicroserviceDescription> semanticMicroserviceDescriptions = new ArrayList<>();
     private OntologyReader ontologyReader;
 
-    public Linkedador(String ontology) {
+    public Linkedator(String ontology) {
         this.ontologyReader = new OntologyReader(ontology);
 
     }
