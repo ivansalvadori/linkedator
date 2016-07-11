@@ -62,48 +62,51 @@ public class Linkedador {
             ExtendedIterator<? extends OntResource> listRange = objectProperty.listRange();
             while (listRange.hasNext()) {
                 String objectPropertyRange = listRange.next().getURI();
-                SemanticResource semanticResource = getSemanticResourceByEntity(objectPropertyRange);
-
+                List<SemanticResource> semanticResources = getSemanticResourceByEntity(objectPropertyRange);
                 /*
                  * in case the range/domain os ah given obj-property have no
                  * implementation
                  */
-                if (semanticResource == null) {
+                if (semanticResources.isEmpty()) {
                     continue;
                 }
 
-                JsonElement jsonElementInferredLink = jsonObjectResourceRepresentation.get(objectProperty.getURI());
+                for (SemanticResource selectedSemanticResource : semanticResources) {
 
-                Set<String> listAllPropertyIds = listAllPropertyIds(resourceRepresentation);
-                UriTemplate uriTemplateMatch = getUriTemplateMatch(semanticResource, listAllPropertyIds);
+                    JsonElement jsonElementInferredLink = jsonObjectResourceRepresentation.get(objectProperty.getURI());
 
-                if (uriTemplateMatch == null) {
-                    continue;
+                    Set<String> listAllPropertyIds = listAllPropertyIds(resourceRepresentation);
+                    UriTemplate uriTemplateMatch = getUriTemplateMatch(selectedSemanticResource, listAllPropertyIds);
+
+                    if (uriTemplateMatch == null) {
+                        continue;
+                    }
+
+                    JsonObject innerInferredObject = new JsonObject();
+                    innerInferredObject.addProperty("@type", selectedSemanticResource.getEntity());
+                    innerInferredObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(selectedSemanticResource, uriTemplateMatch, resourceRepresentation));
+
+                    if (jsonElementInferredLink == null) {
+                        jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(innerInferredObject));
+                    }
+
+                    else if (jsonElementInferredLink.isJsonObject()) {
+                        JsonArray array = new JsonArray();
+                        array.add(new Gson().toJsonTree(jsonElementInferredLink));
+                        array.add(new Gson().toJsonTree(innerInferredObject));
+                        jsonObjectResourceRepresentation.remove(objectProperty.getURI());
+                        jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(array));
+                    }
+
+                    else if (jsonElementInferredLink.isJsonArray()) {
+                        jsonElementInferredLink.getAsJsonArray().add(new Gson().toJsonTree(innerInferredObject));
+                        jsonObjectResourceRepresentation.remove(objectProperty.getURI());
+                        jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(jsonElementInferredLink));
+                    }
+
+                    linkedResourceRepresentation = jsonObjectResourceRepresentation.toString();
+
                 }
-
-                JsonObject innerInferredObject = new JsonObject();
-                innerInferredObject.addProperty("@type", semanticResource.getEntity());
-                innerInferredObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(semanticResource.getEntity(), uriTemplateMatch, resourceRepresentation));
-
-                if (jsonElementInferredLink == null) {
-                    jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(innerInferredObject));
-                }
-
-                else if (jsonElementInferredLink.isJsonObject()) {
-                    JsonArray array = new JsonArray();
-                    array.add(new Gson().toJsonTree(jsonElementInferredLink));
-                    array.add(new Gson().toJsonTree(innerInferredObject));
-                    jsonObjectResourceRepresentation.remove(objectProperty.getURI());
-                    jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(array));
-                }
-
-                else if (jsonElementInferredLink.isJsonArray()) {
-                    jsonElementInferredLink.getAsJsonArray().add(new Gson().toJsonTree(innerInferredObject));
-                    jsonObjectResourceRepresentation.remove(objectProperty.getURI());
-                    jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(jsonElementInferredLink));
-                }
-
-                linkedResourceRepresentation = jsonObjectResourceRepresentation.toString();
 
             }
         }
@@ -120,48 +123,51 @@ public class Linkedador {
             ExtendedIterator<? extends OntResource> listRange = objectProperty.listRange();
             while (listRange.hasNext()) {
                 String objectPropertyRange = listRange.next().getURI();
-                SemanticResource semanticResource = getSemanticResourceByEntity(objectPropertyRange);
+                List<SemanticResource> semanticResources = getSemanticResourceByEntity(objectPropertyRange);
 
                 /*
                  * in case the range/domain os ah given obj-property have no
                  * implementation
                  */
-                if (semanticResource == null) {
+                if (semanticResources.isEmpty()) {
                     continue;
                 }
 
-                boolean isRangeObjectPropertyEqualsEntity = objectPropertyRange.equalsIgnoreCase(semanticResource.getEntity());
-                if (!isRangeObjectPropertyEqualsEntity) {
-                    continue;
-                }
+                for (SemanticResource selectedSemanticResource : semanticResources) {
 
-                JsonElement jsonElement = jsonObjectResourceRepresentation.get(objectProperty.getURI());
-                if (jsonElement.isJsonArray()) {
-                    JsonArray asJsonArray = jsonElement.getAsJsonArray();
-                    Iterator<JsonElement> iterator = asJsonArray.iterator();
-                    while (iterator.hasNext()) {
-                        JsonElement next = iterator.next();
-                        JsonObject asJsonObject = next.getAsJsonObject();
+                    boolean isRangeObjectPropertyEqualsEntity = objectPropertyRange.equalsIgnoreCase(selectedSemanticResource.getEntity());
+                    if (!isRangeObjectPropertyEqualsEntity) {
+                        continue;
+                    }
+
+                    JsonElement jsonElement = jsonObjectResourceRepresentation.get(objectProperty.getURI());
+                    if (jsonElement.isJsonArray()) {
+                        JsonArray asJsonArray = jsonElement.getAsJsonArray();
+                        Iterator<JsonElement> iterator = asJsonArray.iterator();
+                        while (iterator.hasNext()) {
+                            JsonElement next = iterator.next();
+                            JsonObject asJsonObject = next.getAsJsonObject();
+                            Set<String> listAllPropertyIds = listAllPropertyIds(asJsonObject.toString());
+                            UriTemplate uriTemplateMatch = getUriTemplateMatch(selectedSemanticResource, listAllPropertyIds);
+                            if (uriTemplateMatch == null) {
+                                continue;
+                            }
+                            asJsonObject.addProperty("@type", selectedSemanticResource.getEntity());
+                            asJsonObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
+                        }
+                    } else if (jsonElement.isJsonObject()) {
+                        JsonObject asJsonObject = jsonElement.getAsJsonObject();
                         Set<String> listAllPropertyIds = listAllPropertyIds(asJsonObject.toString());
-                        UriTemplate uriTemplateMatch = getUriTemplateMatch(semanticResource, listAllPropertyIds);
+                        UriTemplate uriTemplateMatch = getUriTemplateMatch(selectedSemanticResource, listAllPropertyIds);
                         if (uriTemplateMatch == null) {
                             continue;
                         }
-                        asJsonObject.addProperty("@type", semanticResource.getEntity());
-                        asJsonObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(semanticResource.getEntity(), uriTemplateMatch, asJsonObject.toString()));
+                        asJsonObject.addProperty("@type", selectedSemanticResource.getEntity());
+                        asJsonObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
                     }
-                } else if (jsonElement.isJsonObject()) {
-                    JsonObject asJsonObject = jsonElement.getAsJsonObject();
-                    Set<String> listAllPropertyIds = listAllPropertyIds(asJsonObject.toString());
-                    UriTemplate uriTemplateMatch = getUriTemplateMatch(semanticResource, listAllPropertyIds);
-                    if (uriTemplateMatch == null) {
-                        continue;
-                    }
-                    asJsonObject.addProperty("@type", semanticResource.getEntity());
-                    asJsonObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(semanticResource.getEntity(), uriTemplateMatch, asJsonObject.toString()));
-                }
 
-                linkedResourceRepresentation = jsonObjectResourceRepresentation.toString();
+                    linkedResourceRepresentation = jsonObjectResourceRepresentation.toString();
+                }
 
             }
         }
@@ -183,8 +189,8 @@ public class Linkedador {
         return optimalUriTemplate;
     }
 
-    private String resolveLink(String rangeUri, UriTemplate uriTemplate, String representation) {
-        String link = String.format("%s/%s", getMicroserviceUriBaseByEntity(rangeUri), uriTemplate.getUri());
+    private String resolveLink(SemanticResource semanticResource, UriTemplate uriTemplate, String representation) {
+        String link = String.format("%s/%s", semanticResource.getSemanticMicroserviceDescription().getUriBase(), uriTemplate.getUri());
         Map<String, String> parameters = uriTemplate.getParameters();
         Set<String> uriTemplateParams = parameters.keySet();
         for (String param : uriTemplateParams) {
@@ -195,31 +201,18 @@ public class Linkedador {
         return link;
     }
 
-    private SemanticResource getSemanticResourceByEntity(String entity) {
+    private List<SemanticResource> getSemanticResourceByEntity(String entity) {
+        List<SemanticResource> selectedSemanticResources = new ArrayList<>();
         for (SemanticMicroserviceDescription semanticMicroserviceDescription : semanticMicroserviceDescriptions) {
             List<SemanticResource> semanticResources = semanticMicroserviceDescription.getSemanticResources();
             for (SemanticResource semanticResource : semanticResources) {
                 if (semanticResource.getEntity().equalsIgnoreCase(entity)) {
-                    return semanticResource;
+                    selectedSemanticResources.add(semanticResource);
                 }
             }
         }
 
-        return null;
-
-    }
-
-    private String getMicroserviceUriBaseByEntity(String entity) {
-        for (SemanticMicroserviceDescription semanticMicroserviceDescription : semanticMicroserviceDescriptions) {
-            List<SemanticResource> semanticResources = semanticMicroserviceDescription.getSemanticResources();
-            for (SemanticResource semanticResource : semanticResources) {
-                if (semanticResource.getEntity().equalsIgnoreCase(entity)) {
-                    return semanticMicroserviceDescription.getUriBase();
-                }
-            }
-        }
-
-        return null;
+        return selectedSemanticResources;
 
     }
 

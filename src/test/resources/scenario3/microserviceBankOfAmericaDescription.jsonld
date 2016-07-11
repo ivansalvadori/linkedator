@@ -1,0 +1,25 @@
+{
+ "uriBase": "10.1.1.100",
+ "semanticResources": [
+  {
+   "entity": "http://ssp-ontology.com#BankAccount",
+   "properties": [
+    "http://ssp-ontology.com#accountNumber",
+    "http://ssp-ontology.com#dateOfOpening",
+    "http://ssp-ontology.com#amount",
+    "http://ssp-ontology.com#name",
+    "http://ssp-ontology.com#numeroRg"
+    
+   ],
+   "uriTemplates": [
+    {
+     "method": "GET",
+     "uri": "bankOfAmerica/{x}",
+     "parameters": {
+      "x": "http://ssp-ontology.com#numeroRg"
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -35,7 +35,7 @@ public class LinkedatorScenario1Test extends LinkedatorScenario0Test {
     }
 
     @Test
-    public void mustCreateExplicitArrayLinkInPoliceRepor() throws IOException {
+    public void mustCreateExplicitArrayOfVictimLinkInPoliceRepor() throws IOException {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/policeReportArrayVictim.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(policeReport);
         System.out.println(linkedRepresentation);

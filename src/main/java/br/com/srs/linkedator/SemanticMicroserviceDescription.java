@@ -17,6 +17,10 @@ public class SemanticMicroserviceDescription {
     }
 
     public List<SemanticResource> getSemanticResources() {
+        /* Workarround*/
+        for (SemanticResource semanticResource : semanticResources) {
+            semanticResource.setSemanticMicroserviceDescription(this);
+        }
         return semanticResources;
     }
 

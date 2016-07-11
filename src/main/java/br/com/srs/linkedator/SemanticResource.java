@@ -8,6 +8,15 @@ public class SemanticResource {
     private String entity;
     private List<String> properties = new ArrayList<>();
     private List<UriTemplate> uriTemplates = new ArrayList<>();
+    private SemanticMicroserviceDescription semanticMicroserviceDescription;
+    
+    public SemanticMicroserviceDescription getSemanticMicroserviceDescription() {
+        return semanticMicroserviceDescription;
+    }
+    
+    public void setSemanticMicroserviceDescription(SemanticMicroserviceDescription semanticMicroserviceDescription) {
+        this.semanticMicroserviceDescription = semanticMicroserviceDescription;
+    }
 
     public String getEntity() {
         return entity;
