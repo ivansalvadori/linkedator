@@ -1,0 +1,23 @@
+[
+{
+  "@id": "10.1.1.1/people-microservice/13579",
+  "@type": "http://schema.org/Person",
+   "http://ssp-ontology.com#numeroRg": "13579",
+   "http://ssp-ontology.com#numeroCpf": "4444",  
+   "http://schema.org#name": "Joseph da Silva"
+},
+{
+  "@id": "10.1.1.1/people-microservice/5555",
+  "@type": "http://schema.org/Person",
+   "http://ssp-ontology.com#numeroRg": "5555",
+   "http://ssp-ontology.com#numeroCpf": "4444",  
+   "http://schema.org#name": "Joseph da Silva"
+}
+,{
+  "@id": "10.1.1.1/people-microservice/666",
+  "@type": "http://schema.org/Person",
+   "http://ssp-ontology.com#numeroRg": "666",
+   "http://ssp-ontology.com#numeroCpf": "4444",  
+   "http://schema.org#name": "Joseph da Silva"
+}
+]

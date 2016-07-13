@@ -1,0 +1,34 @@
+[
+  {
+    "@id": "10.1.1.2/policeReport-microservice/123",
+    "@type": "http://ssp-ontology.com#PoliceReport",
+    "http://ssp-ontology.com#numeroBoletim": "123",
+    "http://ssp-ontology.com#dataOcorrencia": "10/10/2000",
+    "http://ssp-ontology.com#victim": {
+      "http://ssp-ontology.com#numeroRg": "123456"
+    }
+  },
+  {
+    "@id": "10.1.1.2/policeReport-microservice/456",
+    "@type": "http://ssp-ontology.com#PoliceReport",
+    "http://ssp-ontology.com#numeroBoletim": "456",
+    "http://ssp-ontology.com#dataOcorrencia": "10/10/2000",
+    "http://ssp-ontology.com#victim": {
+      "http://ssp-ontology.com#numeroRg": "654321"
+    }
+  },
+  {
+    "@id": "10.1.1.2/policeReport-microservice/789",
+    "@type": "http://ssp-ontology.com#PoliceReport",
+    "http://ssp-ontology.com#numeroBoletim": "789",
+    "http://ssp-ontology.com#dataOcorrencia": "10/10/2000",
+    "http://ssp-ontology.com#victim": [
+      {
+        "http://ssp-ontology.com#numeroRg": "6758493"
+      },
+      {
+        "http://ssp-ontology.com#numeroRg": "4433221111"
+      }
+    ]
+  }
+]
