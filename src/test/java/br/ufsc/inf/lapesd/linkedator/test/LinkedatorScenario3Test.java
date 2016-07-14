@@ -50,11 +50,11 @@ public class LinkedatorScenario3Test extends LinkedatorScenario2Test {
         String linkedRepresentation = linkedador.createLinks(person);
         System.out.println(linkedRepresentation);
         String expectedLinked1 = "http://ssp-ontology.com#hasBankAccount";
-        String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.100/bankOfAmerica/13579\"}";
-        String expectedLinked3 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.200/bankOfEurope/13579\"}";
-        String expectedLinked4 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.300/bankOfAsia/13579\"}";
-        String expectedLinked5 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.500/bankOfJapan/13579\"}";
-        String expectedLinked6 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.400/bankOfEmirates/13579\"}";
+        String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.100/bankOfAmerica/13579\"}";
+        String expectedLinked3 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.200/bankOfEurope/13579\"}";
+        String expectedLinked4 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.300/bankOfAsia/13579\"}";
+        String expectedLinked5 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.500/bankOfJapan/13579\"}";
+        String expectedLinked6 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.400/bankOfEmirates/13579\"}";
 
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked1));
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked2));

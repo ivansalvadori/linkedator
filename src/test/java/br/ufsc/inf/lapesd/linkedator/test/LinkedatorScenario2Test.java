@@ -45,10 +45,10 @@ public class LinkedatorScenario2Test extends LinkedatorScenario1Test {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/person.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(person);
         System.out.println(linkedRepresentation);
-        String expectedLinked1 = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.2/reports/13579\"}";
-        String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.30/reports/4444\"}";
-        String expectedLinked3 = "{\"@type\":\"http://ssp-ontology.com#Vehicle\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.40/reports/13579\"}";
-        String expectedLinked4 = "{\"@type\":\"http://ssp-ontology.com#Imobiliary\",\"http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"10.1.1.50/reports/13579\"}";
+        String expectedLinked1 = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.2/reports/13579\"}";
+        String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.30/reports/4444\"}";
+        String expectedLinked3 = "{\"@type\":\"http://ssp-ontology.com#Vehicle\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.40/reports/13579\"}";
+        String expectedLinked4 = "{\"@type\":\"http://ssp-ontology.com#Imobiliary\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.50/reports/13579\"}";
 
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked1));
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked2));

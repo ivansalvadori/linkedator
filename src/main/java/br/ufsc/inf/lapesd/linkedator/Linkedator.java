@@ -119,7 +119,7 @@ public class Linkedator {
 
                     JsonObject innerInferredObject = new JsonObject();
                     innerInferredObject.addProperty("@type", selectedSemanticResource.getEntity());
-                    innerInferredObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso",
+                    innerInferredObject.addProperty("http://www.w3.org/2002/07/owl#sameAs",
                             resolveLink(selectedSemanticResource, uriTemplateMatch, jsonObjectResourceRepresentation.toString()));
 
                     if (jsonElementInferredLink == null) {
@@ -182,7 +182,7 @@ public class Linkedator {
                                 continue;
                             }
                             asJsonObject.addProperty("@type", selectedSemanticResource.getEntity());
-                            asJsonObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
+                            asJsonObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
                         }
                     } else if (jsonElement.isJsonObject()) {
                         JsonObject asJsonObject = jsonElement.getAsJsonObject();
@@ -192,7 +192,7 @@ public class Linkedator {
                             continue;
                         }
                         asJsonObject.addProperty("@type", selectedSemanticResource.getEntity());
-                        asJsonObject.addProperty("http://www.w3.org/2000/01/rdf-schema#seeAlso", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
+                        asJsonObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
                     }
                 }
             }
