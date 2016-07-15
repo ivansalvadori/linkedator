@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 
+import com.google.gson.Gson;
+
 public class SemanticMicroserviceDescription {
 
     private String ipAddress;
@@ -14,7 +16,7 @@ public class SemanticMicroserviceDescription {
     private List<SemanticResource> semanticResources = new ArrayList<>();
 
     public String getMicroserviceFullPath() {
-        UriBuilder builder = UriBuilder.fromPath("{ipAddress}:{serverPort}").scheme("http").path(uriBase);
+        UriBuilder builder = UriBuilder.fromPath("http://{ipAddress}:{serverPort}").path(uriBase);
         URI uri = builder.build(ipAddress, serverPort);
         return uri.toASCIIString();
     }
@@ -53,6 +55,11 @@ public class SemanticMicroserviceDescription {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 
 }

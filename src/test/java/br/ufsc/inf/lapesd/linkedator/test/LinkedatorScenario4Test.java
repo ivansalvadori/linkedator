@@ -47,16 +47,16 @@ public class LinkedatorScenario4Test {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/policeReportArray.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(policeReport);
         System.out.println(linkedRepresentation);
-        String expectedLink = "\"http://ssp-ontology.com#victim\":{\"http://ssp-ontology.com#numeroRg\":\"123456\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.1:8080/service/vitima/123456\"}";
+        String expectedLink = "\"http://ssp-ontology.com#victim\":{\"http://ssp-ontology.com#numeroRg\":\"123456\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/123456\"}";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink));
 
-        String expectedLink2 = "http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.1:8080/service/vitima/654321";
+        String expectedLink2 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/654321";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink2));
 
-        String expectedLink3 = "http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.1:8080/service/vitima/6758493";
+        String expectedLink3 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/6758493";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink3));
 
-        String expectedLink4 = "http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.1:8080/service/vitima/4433221111";
+        String expectedLink4 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/4433221111";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink4));
     }
 
@@ -65,13 +65,13 @@ public class LinkedatorScenario4Test {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/personArray.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(person);
         System.out.println(linkedRepresentation);
-        String expectedLinked = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.2:8080/service/reports/13579\"}";
+        String expectedLinked = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/13579\"}";
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked));
 
-        String expectedLinked1 = "http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.2:8080/service/reports/5555";
+        String expectedLinked1 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/5555";
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked1));
 
-        String expectedLinked2 = "http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.2:8080/service/reports/666";
+        String expectedLinked2 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/666";
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked2));
     }
 

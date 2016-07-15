@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
-public class LinkedatorScenario3Test extends LinkedatorScenario2Test {
+public class LinkedatorScenario3Test {
 
     Linkedator linkedador;
 
@@ -65,11 +65,11 @@ public class LinkedatorScenario3Test extends LinkedatorScenario2Test {
         String linkedRepresentation = linkedador.createLinks(person);
         System.out.println(linkedRepresentation);
         String expectedLinked1 = "http://ssp-ontology.com#hasBankAccount";
-        String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.1:8080/service/bankOfAmerica/13579\"}";
-        String expectedLinked3 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.2:8080/service/bankOfEurope/13579\"}";
-        String expectedLinked4 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.3:8080/service/bankOfAsia/13579\"}";
-        String expectedLinked6 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.5:8080/service/bankOfEmirates/13579\"}";
-        String expectedLinked5 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.4:8080/service/bankOfJapan/13579\"}";
+        String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/bankOfAmerica/13579\"}";
+        String expectedLinked3 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/bankOfEurope/13579\"}";
+        String expectedLinked4 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.3:8080/service/bankOfAsia/13579\"}";
+        String expectedLinked6 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.5:8080/service/bankOfEmirates/13579\"}";
+        String expectedLinked5 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.4:8080/service/bankOfJapan/13579\"}";
 
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked1));
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked2));
