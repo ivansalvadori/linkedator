@@ -1,6 +1,5 @@
 {
-  "uriBase": "10.1.1.1",
-  "semanticResources": [
+ "semanticResources": [
     {
       "entity": "http://schema.org/Person",
       "properties": [

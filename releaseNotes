@@ -1,0 +1,6 @@
+0.0.2
+Improved link creation by using URIBuilder from jersey framework.
+
+0.0.1
+=====
+Initial Version

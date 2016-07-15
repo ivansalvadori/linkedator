@@ -1,5 +1,4 @@
 {
-  "uriBase": "10.1.1.1",
   "semanticResources": [
     {
       "entity": "http://schema.org/Person",
@@ -11,14 +10,15 @@
       "uriTemplates": [
         {
           "method": "GET",
-          "uri": "vitima/{x}",
+          "uri": "/vitima{?x,y}",
           "parameters": {
-            "x": "http://ssp-ontology.com#numeroRg"
+            "x": "http://ssp-ontology.com#numeroRg",
+            "y": "http://ssp-ontology.com#numeroCpf"
           }
         },
         {
           "method": "GET",
-          "uri": "vitima/{x}",
+          "uri": "/vitima/{x}",
           "parameters": {
             "x": "http://ssp-ontology.com#dataNascimento"
           }

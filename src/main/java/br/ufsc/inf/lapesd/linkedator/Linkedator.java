@@ -1,11 +1,15 @@
 package br.ufsc.inf.lapesd.linkedator;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntResource;
@@ -119,8 +123,7 @@ public class Linkedator {
 
                     JsonObject innerInferredObject = new JsonObject();
                     innerInferredObject.addProperty("@type", selectedSemanticResource.getEntity());
-                    innerInferredObject.addProperty("http://www.w3.org/2002/07/owl#sameAs",
-                            resolveLink(selectedSemanticResource, uriTemplateMatch, jsonObjectResourceRepresentation.toString()));
+                    innerInferredObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolveLink(selectedSemanticResource, uriTemplateMatch, jsonObjectResourceRepresentation.toString()));
 
                     if (jsonElementInferredLink == null) {
                         jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(innerInferredObject));
@@ -216,14 +219,19 @@ public class Linkedator {
     }
 
     private String resolveLink(SemanticResource semanticResource, UriTemplate uriTemplate, String representation) {
-        String link = String.format("%s/%s", semanticResource.getSemanticMicroserviceDescription().getUriBase(), uriTemplate.getUri());
+        UriBuilder builder = UriBuilder.fromPath(semanticResource.getSemanticMicroserviceDescription().getMicroserviceFullPath()).path(uriTemplate.getUri());
+
+        Map<String, Object> resolvedParameters = new HashMap<>();
         Map<String, String> parameters = uriTemplate.getParameters();
         Set<String> uriTemplateParams = parameters.keySet();
         for (String param : uriTemplateParams) {
             String uriPropertyOfParam = parameters.get(param);
             String paramValuepresentedInResourceRep = JsonPath.read(representation, String.format("$['%s']", uriPropertyOfParam));
-            link = link.replace("{" + param + "}", paramValuepresentedInResourceRep);
+            resolvedParameters.put(param, paramValuepresentedInResourceRep);
         }
+        builder.resolveTemplates(resolvedParameters);
+        URI uri = builder.build();
+        String link = uri.toASCIIString();
         return link;
     }
 

@@ -28,10 +28,16 @@ public class LinkedatorScenario0Test {
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);
+        microservicesDescription.setIpAddress("192.168.10.1");
+        microservicesDescription.setServerPort("8080");
+        microservicesDescription.setUriBase("/service/");
         linkedador.registryDescription(microservicesDescription);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
+        policeReportDescription.setIpAddress("192.168.10.2");
+        policeReportDescription.setServerPort("8080");
+        policeReportDescription.setUriBase("/service/");
         linkedador.registryDescription(policeReportDescription);
 
     }
@@ -41,7 +47,7 @@ public class LinkedatorScenario0Test {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/policeReport.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(policeReport);
         System.out.println(linkedRepresentation);
-        String expectedLink = "\"http://ssp-ontology.com#victim\":{\"http://ssp-ontology.com#numeroRg\":\"123456\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.1/vitima/123456\"}";
+        String expectedLink = "http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.1:8080/service/vitima?x=123456&y=88888";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink));
     }
 
@@ -50,7 +56,7 @@ public class LinkedatorScenario0Test {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/person.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(person);
         System.out.println(linkedRepresentation);
-        String expectedLinked = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"10.1.1.2/reports/13579\"}";
+        String expectedLinked = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http:192.168.10.2:8080/service/reports/13579\"}";
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked));
     }
 }

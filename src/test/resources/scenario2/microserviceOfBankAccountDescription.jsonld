@@ -1,5 +1,4 @@
 {
- "uriBase": "10.1.1.30",
  "semanticResources": [
   {
    "entity": "http://ssp-ontology.com#BankAccount",

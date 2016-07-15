@@ -1,5 +1,4 @@
 {
-  "uriBase": "10.1.1.3",
   "semanticResources": [
     {
       "entity": "http://schema.org/Animal",
