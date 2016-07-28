@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -21,6 +22,8 @@ import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -32,6 +35,7 @@ public class Linkedator {
 
     private List<SemanticMicroserviceDescription> semanticMicroserviceDescriptions = new ArrayList<>();
     private OntologyReader ontologyReader;
+    private Cache<String, Boolean> linkCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(1000).expireAfterAccess(30, TimeUnit.SECONDS).build();
 
     public Linkedator(String ontology) {
         this.ontologyReader = new OntologyReader(ontology);
@@ -290,18 +294,26 @@ public class Linkedator {
 
     protected boolean isLinkValid(String link) {
         Client client = ClientBuilder.newClient();
-        WebTarget webTarget = client.target(link);
+        WebTarget webTarget = client.target(link).queryParam("linkedatorOptions", "linkVerify");
+        
+        Boolean isCached = linkCache.getIfPresent(link);
+        if(isCached !=null){
+            System.out.println(String.format("verifying: %s (cached)", link));
+            return isCached;
+        }
 
         Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 
         try {
             System.out.println(String.format("verifying: %s", link));
-            Response response = invocationBuilder.get();
+            Response response = invocationBuilder.head();
 
             int status = response.getStatus();
             if (status == 200) {
+                linkCache.put(link, true);
                 return true;
             }
+            linkCache.put(link, false);
             return false;
 
         } catch (Exception e) {
