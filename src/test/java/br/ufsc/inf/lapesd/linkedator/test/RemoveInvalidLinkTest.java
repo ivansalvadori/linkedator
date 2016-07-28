@@ -12,7 +12,25 @@ import com.google.gson.Gson;
 import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
-public class LinkedatorScenario0Test {
+public class RemoveInvalidLinkTest {
+
+    class LinkedatorTestable extends Linkedator {
+
+        public LinkedatorTestable(String ontology) {
+            super(ontology);
+        }
+
+        @Override
+        protected boolean isLinkValid(String link) {
+            String expectedLink1 = "http://192.168.10.1:8080/service/vitima?x=123456&y=88888";
+            String expectedLink2 = "http://192.168.10.2:8080/service/reports/13579";
+            if (link.equalsIgnoreCase(expectedLink1) || link.equalsIgnoreCase(expectedLink2)) {
+                return false;
+            }
+            return true;
+        }
+
+    }
 
     Linkedator linkedador;
 
@@ -24,7 +42,7 @@ public class LinkedatorScenario0Test {
     public void configure() throws IOException {
 
         String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/domainOntology.owl"), "UTF-8");
-        linkedador = new Linkedator(ontology);
+        linkedador = new LinkedatorTestable(ontology);
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);
@@ -43,20 +61,21 @@ public class LinkedatorScenario0Test {
     }
 
     @Test
-    public void mustCreateExplicitLinkInPoliceRepor() throws IOException {
+    public void mustRemoveInvalidLinkDirect() throws IOException {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/policeReport.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(policeReport, false);
+        String linkedRepresentation = linkedador.createLinks(policeReport, true);
         System.out.println(linkedRepresentation);
         String expectedLink = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima?x=123456&y=88888";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLink));
+        Assert.assertFalse(linkedRepresentation.contains(expectedLink));
     }
 
     @Test
-    public void mustCreateInferredLinkInPerson() throws IOException {
+    public void mustRemoveInvalidLinkInverse() throws IOException {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/person.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(person, false);
+        String linkedRepresentation = linkedador.createLinks(person, true);
         System.out.println(linkedRepresentation);
         String expectedLinked = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/13579\"}";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLinked));
+        Assert.assertFalse(linkedRepresentation.contains(expectedLinked));
     }
+
 }

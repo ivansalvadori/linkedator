@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.jena.ontology.ObjectProperty;
@@ -35,45 +41,45 @@ public class Linkedator {
         this.semanticMicroserviceDescriptions.add(semanticMicroserviceDescription);
     }
 
-    public String createLinks(String resourceRepresentation) {
+    public String createLinks(String resourceRepresentation, boolean verifyLinks) {
         String linkedResourceRepresentation = resourceRepresentation;
-        linkedResourceRepresentation = createExplicitLinks(resourceRepresentation);
-        linkedResourceRepresentation = createInferredLinks(linkedResourceRepresentation);
+        linkedResourceRepresentation = createExplicitLinks(resourceRepresentation, verifyLinks);
+        linkedResourceRepresentation = createInferredLinks(linkedResourceRepresentation, verifyLinks);
         return linkedResourceRepresentation;
     }
 
-    private String createInferredLinks(String resourceRepresentation) {
+    private String createInferredLinks(String resourceRepresentation, boolean verifyLinks) {
         JsonElement parseRepresentation = new JsonParser().parse(resourceRepresentation);
         if (!parseRepresentation.isJsonObject()) {
             JsonArray jsonArrayWithLinks = new JsonArray();
             JsonArray asJsonArray = parseRepresentation.getAsJsonArray();
             for (int i = 0; i < asJsonArray.size(); i++) {
-                JsonObject createLinks = createInferredLinks(asJsonArray.get(i).getAsJsonObject());
+                JsonObject createLinks = createInferredLinks(asJsonArray.get(i).getAsJsonObject(), verifyLinks);
                 jsonArrayWithLinks.add(createLinks);
             }
             return jsonArrayWithLinks.toString();
         }
 
         if (parseRepresentation.isJsonObject()) {
-            return createInferredLinks(parseRepresentation.getAsJsonObject()).toString();
+            return createInferredLinks(parseRepresentation.getAsJsonObject(), verifyLinks).toString();
         }
 
         return resourceRepresentation;
     }
 
-    private String createExplicitLinks(String resourceRepresentation) {
+    private String createExplicitLinks(String resourceRepresentation, boolean verifyLinks) {
         String linkedResourceRepresentation = resourceRepresentation;
         JsonElement parseRepresentation = new JsonParser().parse(resourceRepresentation);
 
         if (parseRepresentation.isJsonObject()) {
-            return createExplicitLinks(parseRepresentation.getAsJsonObject()).toString();
+            return createExplicitLinks(parseRepresentation.getAsJsonObject(), verifyLinks).toString();
         }
 
         if (parseRepresentation.isJsonArray()) {
             JsonArray jsonArrayWithLinks = new JsonArray();
             JsonArray asJsonArray = parseRepresentation.getAsJsonArray();
             for (int i = 0; i < asJsonArray.size(); i++) {
-                JsonObject createLinks = createExplicitLinks(asJsonArray.get(i).getAsJsonObject());
+                JsonObject createLinks = createExplicitLinks(asJsonArray.get(i).getAsJsonObject(), verifyLinks);
                 jsonArrayWithLinks.add(createLinks);
             }
 
@@ -82,7 +88,7 @@ public class Linkedator {
         return linkedResourceRepresentation;
     }
 
-    private JsonObject createInferredLinks(JsonObject jsonObjectResourceRepresentation) {
+    private JsonObject createInferredLinks(JsonObject jsonObjectResourceRepresentation, boolean verifyLinks) {
         List<ObjectProperty> applicableObjectProperties = new ArrayList<>();
         String resourceRepresentationId = JsonPath.read(jsonObjectResourceRepresentation.toString(), "$['@type']");
 
@@ -122,25 +128,32 @@ public class Linkedator {
                     }
 
                     JsonObject innerInferredObject = new JsonObject();
-                    innerInferredObject.addProperty("@type", selectedSemanticResource.getEntity());
-                    innerInferredObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolveLink(selectedSemanticResource, uriTemplateMatch, jsonObjectResourceRepresentation.toString()));
+                    String resolvedLink = resolveLink(selectedSemanticResource, uriTemplateMatch, jsonObjectResourceRepresentation.toString());
+
+                    if (!verifyLinks || (verifyLinks && isLinkValid(resolvedLink))) {
+                        innerInferredObject.addProperty("@type", selectedSemanticResource.getEntity());
+                        innerInferredObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolvedLink);
+                    }
 
                     if (jsonElementInferredLink == null) {
-                        jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(innerInferredObject));
-                    }
+                        if (innerInferredObject.entrySet().size() > 0) {
+                            jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(innerInferredObject));
+                        }
+                    } else {
 
-                    else if (jsonElementInferredLink.isJsonObject()) {
-                        JsonArray array = new JsonArray();
-                        array.add(new Gson().toJsonTree(jsonElementInferredLink));
-                        array.add(new Gson().toJsonTree(innerInferredObject));
-                        jsonObjectResourceRepresentation.remove(objectProperty.getURI());
-                        jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(array));
-                    }
+                        if (jsonElementInferredLink.isJsonObject()) {
+                            JsonArray array = new JsonArray();
+                            array.add(new Gson().toJsonTree(jsonElementInferredLink));
+                            array.add(new Gson().toJsonTree(innerInferredObject));
+                            jsonObjectResourceRepresentation.remove(objectProperty.getURI());
+                            jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(array));
+                        }
 
-                    else if (jsonElementInferredLink.isJsonArray()) {
-                        jsonElementInferredLink.getAsJsonArray().add(new Gson().toJsonTree(innerInferredObject));
-                        jsonObjectResourceRepresentation.remove(objectProperty.getURI());
-                        jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(jsonElementInferredLink));
+                        else if (jsonElementInferredLink.isJsonArray()) {
+                            jsonElementInferredLink.getAsJsonArray().add(new Gson().toJsonTree(innerInferredObject));
+                            jsonObjectResourceRepresentation.remove(objectProperty.getURI());
+                            jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(jsonElementInferredLink));
+                        }
                     }
                 }
             }
@@ -149,7 +162,7 @@ public class Linkedator {
         return jsonObjectResourceRepresentation;
     }
 
-    private JsonObject createExplicitLinks(JsonObject jsonObjectResourceRepresentation) {
+    private JsonObject createExplicitLinks(JsonObject jsonObjectResourceRepresentation, boolean verifyLinks) {
         List<ObjectProperty> listObjectProperties = listObjectProperties(jsonObjectResourceRepresentation.toString());
         for (ObjectProperty objectProperty : listObjectProperties) {
             ExtendedIterator<? extends OntResource> listRange = objectProperty.listRange();
@@ -185,7 +198,10 @@ public class Linkedator {
                                 continue;
                             }
                             asJsonObject.addProperty("@type", selectedSemanticResource.getEntity());
-                            asJsonObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
+                            String resolvedLink = resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString());
+                            if (!verifyLinks || (verifyLinks && isLinkValid(resolvedLink))) {
+                                asJsonObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolvedLink);
+                            }
                         }
                     } else if (jsonElement.isJsonObject()) {
                         JsonObject asJsonObject = jsonElement.getAsJsonObject();
@@ -195,7 +211,11 @@ public class Linkedator {
                             continue;
                         }
                         asJsonObject.addProperty("@type", selectedSemanticResource.getEntity());
-                        asJsonObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString()));
+                        String resolvedLink = resolveLink(selectedSemanticResource, uriTemplateMatch, asJsonObject.toString());
+
+                        if (!verifyLinks || (verifyLinks && isLinkValid(resolvedLink))) {
+                            asJsonObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolvedLink);
+                        }
                     }
                 }
             }
@@ -266,5 +286,26 @@ public class Linkedator {
     private Set<String> listAllPropertyIds(String resourceRepresentation) {
         Map<String, ?> obj = JsonPath.read(resourceRepresentation, "$");
         return obj.keySet();
+    }
+
+    protected boolean isLinkValid(String link) {
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget = client.target(link);
+
+        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+
+        try {
+            System.out.println(String.format("verifying: %s", link));
+            Response response = invocationBuilder.get();
+
+            int status = response.getStatus();
+            if (status == 200) {
+                return true;
+            }
+            return false;
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

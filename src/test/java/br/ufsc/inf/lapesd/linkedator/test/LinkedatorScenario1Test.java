@@ -46,7 +46,7 @@ public class LinkedatorScenario1Test {
     @Test
     public void mustCreateExplicitArrayOfVictimLinkInPoliceRepor() throws IOException {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/policeReportArrayVictim.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(policeReport);
+        String linkedRepresentation = linkedador.createLinks(policeReport, false);
         System.out.println(linkedRepresentation);
         String expectedVictim1 = "{\"http://ssp-ontology.com#numeroRg\":\"123456\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/123456\"}";
         String expectedVictim2 = "{\"http://ssp-ontology.com#numeroRg\":\"44444\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/44444\"}";
@@ -59,7 +59,7 @@ public class LinkedatorScenario1Test {
     @Test
     public void mustCreateExplicitArrayLinkInPoliceReporPersonAndAnimal() throws IOException {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/policeReportPersonAndAnimalVictims.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(policeReport);
+        String linkedRepresentation = linkedador.createLinks(policeReport, false);
         System.out.println(linkedRepresentation);
         String expectedVictim1 = "{\"http://ssp-ontology.com#numeroRg\":\"123456\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/123456\"}";
         String expectedVictim2 = "{\"http://ssp-ontology.com#petTrackId\":\"0001\",\"@type\":\"http://schema.org/Animal\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.3:8080/service/pet/0001\"}";

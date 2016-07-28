@@ -62,7 +62,7 @@ public class LinkedatorScenario3Test {
     @Test
     public void mustCreateMultipleInferredLinkInPersonForMultipleBanks() throws IOException {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario3/person.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(person);
+        String linkedRepresentation = linkedador.createLinks(person, false);
         System.out.println(linkedRepresentation);
         String expectedLinked1 = "http://ssp-ontology.com#hasBankAccount";
         String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/bankOfAmerica/13579\"}";

@@ -45,7 +45,7 @@ public class LinkedatorScenario4Test {
     @Test
     public void mustCreateExplicitLinkInPoliceRepor() throws IOException {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/policeReportArray.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(policeReport);
+        String linkedRepresentation = linkedador.createLinks(policeReport, false);
         System.out.println(linkedRepresentation);
         String expectedLink = "\"http://ssp-ontology.com#victim\":{\"http://ssp-ontology.com#numeroRg\":\"123456\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/123456\"}";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink));
@@ -63,7 +63,7 @@ public class LinkedatorScenario4Test {
     @Test
     public void mustCreateInferredLinkInPerson() throws IOException {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/personArray.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(person);
+        String linkedRepresentation = linkedador.createLinks(person, false);
         System.out.println(linkedRepresentation);
         String expectedLinked = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/13579\"}";
         Assert.assertTrue(linkedRepresentation.contains(expectedLinked));

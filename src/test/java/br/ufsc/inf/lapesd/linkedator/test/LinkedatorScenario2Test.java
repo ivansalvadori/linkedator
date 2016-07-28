@@ -55,7 +55,7 @@ public class LinkedatorScenario2Test {
     @Test
     public void mustCreateMultipleInferredLinkInPersonForMultipleOwner() throws IOException {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/person.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(person);
+        String linkedRepresentation = linkedador.createLinks(person, false);
         System.out.println(linkedRepresentation);
         String expectedLinked1 = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/reports/13579\"}";
         String expectedLinked2 = "{\"@type\":\"http://ssp-ontology.com#BankAccount\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.4:8080/service/reports/4444\"}";
