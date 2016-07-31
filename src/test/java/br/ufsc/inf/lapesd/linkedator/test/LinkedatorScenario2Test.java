@@ -24,31 +24,31 @@ public class LinkedatorScenario2Test {
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(policeReportDescription);
         policeReportDescription.setIpAddress("192.168.10.1");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
+        linkedador.registryDescription(policeReportDescription);
 
         String vehicleDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfVehicleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription vehicleDescription = new Gson().fromJson(vehicleDescriptionContent, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(vehicleDescription);
         vehicleDescription.setIpAddress("192.168.10.2");
         vehicleDescription.setServerPort("8080");
         vehicleDescription.setUriBase("/service/");
+        linkedador.registryDescription(vehicleDescription);
 
         String imobiliaryDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfImobiliaryDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription imobiliaryDescription = new Gson().fromJson(imobiliaryDescriptionContent, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(imobiliaryDescription);
         imobiliaryDescription.setIpAddress("192.168.10.3");
         imobiliaryDescription.setServerPort("8080");
         imobiliaryDescription.setUriBase("/service/");
+        linkedador.registryDescription(imobiliaryDescription);
 
         String bankAccountDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfBankAccountDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription bankAccountDescription = new Gson().fromJson(bankAccountDescriptionContent, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(bankAccountDescription);
         bankAccountDescription.setIpAddress("192.168.10.4");
         bankAccountDescription.setServerPort("8080");
         bankAccountDescription.setUriBase("/service/");
+        linkedador.registryDescription(bankAccountDescription);
 
     }
 

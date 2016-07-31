@@ -23,24 +23,24 @@ public class LinkedatorScenario1Test {
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(microservicesDescription);
         microservicesDescription.setIpAddress("192.168.10.1");
         microservicesDescription.setServerPort("8080");
         microservicesDescription.setUriBase("/service/");
+        linkedador.registryDescription(microservicesDescription);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(policeReportDescription);
         policeReportDescription.setIpAddress("192.168.10.2");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
+        linkedador.registryDescription(policeReportDescription);
 
         String animalReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/microserviceOfAnimalDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription animalReportDescription = new Gson().fromJson(animalReportDescriptionContent, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(animalReportDescription);
         animalReportDescription.setIpAddress("192.168.10.3");
         animalReportDescription.setServerPort("8080");
         animalReportDescription.setUriBase("/service/");
+        linkedador.registryDescription(animalReportDescription);
     }
 
     @Test

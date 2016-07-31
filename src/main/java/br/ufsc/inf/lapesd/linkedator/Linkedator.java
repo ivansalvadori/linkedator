@@ -33,16 +33,40 @@ import com.jayway.jsonpath.JsonPath;
 
 public class Linkedator {
 
-    private List<SemanticMicroserviceDescription> semanticMicroserviceDescriptions = new ArrayList<>();
+    private Map<String, SemanticMicroserviceDescription> registeredMicroservices = new HashMap<>();
     private OntologyReader ontologyReader;
-    private Cache<String, Boolean> linkCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(1000).expireAfterAccess(30, TimeUnit.SECONDS).build();
+
+    private boolean cacheEnabled = true;
+    private int cacheMaximumSize = 100;
+    private int cacheExpireAfterAccessSeconds = 30;
+    private Cache<String, Boolean> linkCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(cacheMaximumSize).expireAfterAccess(cacheExpireAfterAccessSeconds, TimeUnit.SECONDS).build();
 
     public Linkedator(String ontology) {
         this.ontologyReader = new OntologyReader(ontology);
     }
 
+    public void enableCache(boolean enable) {
+        this.cacheEnabled = enable;
+    }
+
+    public void setCacheConfiguration(int maximumSize, int expireAfterAccessSeconds) {
+        this.cacheExpireAfterAccessSeconds = expireAfterAccessSeconds;
+        this.cacheMaximumSize = maximumSize;
+    }
+
     public void registryDescription(SemanticMicroserviceDescription semanticMicroserviceDescription) {
-        this.semanticMicroserviceDescriptions.add(semanticMicroserviceDescription);
+        try {
+            String microserviceFullPath = semanticMicroserviceDescription.getMicroserviceFullPath();
+            if (registeredMicroservices.get(microserviceFullPath) != null) {
+                System.out.println(microserviceFullPath + " updated");
+            } else {
+                System.out.println(microserviceFullPath + " registered");
+            }
+            registeredMicroservices.put(microserviceFullPath, semanticMicroserviceDescription);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid description");
+        }
     }
 
     public String createLinks(String resourceRepresentation, boolean verifyLinks) {
@@ -261,7 +285,7 @@ public class Linkedator {
 
     private List<SemanticResource> getSemanticResourceByEntity(String entity) {
         List<SemanticResource> selectedSemanticResources = new ArrayList<>();
-        for (SemanticMicroserviceDescription semanticMicroserviceDescription : semanticMicroserviceDescriptions) {
+        for (SemanticMicroserviceDescription semanticMicroserviceDescription : registeredMicroservices.values()) {
             List<SemanticResource> semanticResources = semanticMicroserviceDescription.getSemanticResources();
             for (SemanticResource semanticResource : semanticResources) {
                 if (semanticResource.getEntity().equalsIgnoreCase(entity)) {
@@ -293,11 +317,15 @@ public class Linkedator {
     }
 
     protected boolean isLinkValid(String link) {
+        if (!cacheEnabled) {
+            return isLinkValidNoCache(link);
+        }
+
         Client client = ClientBuilder.newClient();
         WebTarget webTarget = client.target(link).queryParam("linkedatorOptions", "linkVerify");
-        
+
         Boolean isCached = linkCache.getIfPresent(link);
-        if(isCached !=null){
+        if (isCached != null) {
             System.out.println(String.format("verifying: %s (cached)", link));
             return isCached;
         }
@@ -314,6 +342,27 @@ public class Linkedator {
                 return true;
             }
             linkCache.put(link, false);
+            return false;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    protected boolean isLinkValidNoCache(String link) {
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget = client.target(link).queryParam("linkedatorOptions", "linkVerify");
+
+        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+
+        try {
+            System.out.println(String.format("verifying: %s", link));
+            Response response = invocationBuilder.head();
+
+            int status = response.getStatus();
+            if (status == 200) {
+                return true;
+            }
             return false;
 
         } catch (Exception e) {

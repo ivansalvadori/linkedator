@@ -1,5 +1,7 @@
 0.0.2
 =====
+Microservice registry improved, description replacement.
+Cache configuration implemented.
 Implemented link verification.
 Improved link creation by using URIBuilder from jersey framework.
 

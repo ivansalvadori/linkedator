@@ -24,38 +24,38 @@ public class LinkedatorScenario3Test {
 
         String descriptionContent1 = IOUtils.toString(this.getClass().getResourceAsStream("/scenario3/microserviceBankOfAmericaDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription semanticMicroserviceDescription1 = new Gson().fromJson(descriptionContent1, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(semanticMicroserviceDescription1);
         semanticMicroserviceDescription1.setIpAddress("192.168.10.1");
         semanticMicroserviceDescription1.setServerPort("8080");
         semanticMicroserviceDescription1.setUriBase("/service/");
+        linkedador.registryDescription(semanticMicroserviceDescription1);
 
         String descriptionContent2 = IOUtils.toString(this.getClass().getResourceAsStream("/scenario3/microserviceBankOfEuropeDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription semanticMicroserviceDescription2 = new Gson().fromJson(descriptionContent2, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(semanticMicroserviceDescription2);
         semanticMicroserviceDescription2.setIpAddress("192.168.10.2");
         semanticMicroserviceDescription2.setServerPort("8080");
         semanticMicroserviceDescription2.setUriBase("/service/");
+        linkedador.registryDescription(semanticMicroserviceDescription2);
 
         String descriptionContent3 = IOUtils.toString(this.getClass().getResourceAsStream("/scenario3/microserviceBankOfAsiaDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription semanticMicroserviceDescription3 = new Gson().fromJson(descriptionContent3, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(semanticMicroserviceDescription3);
         semanticMicroserviceDescription3.setIpAddress("192.168.10.3");
         semanticMicroserviceDescription3.setServerPort("8080");
         semanticMicroserviceDescription3.setUriBase("/service/");
+        linkedador.registryDescription(semanticMicroserviceDescription3);
 
         String descriptionContent4 = IOUtils.toString(this.getClass().getResourceAsStream("/scenario3/microserviceBankOfJapanDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription semanticMicroserviceDescription4 = new Gson().fromJson(descriptionContent4, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(semanticMicroserviceDescription4);
         semanticMicroserviceDescription4.setIpAddress("192.168.10.4");
         semanticMicroserviceDescription4.setServerPort("8080");
         semanticMicroserviceDescription4.setUriBase("/service/");
+        linkedador.registryDescription(semanticMicroserviceDescription4);
 
         String descriptionContent5 = IOUtils.toString(this.getClass().getResourceAsStream("/scenario3/microserviceBankOfEmiratesDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription semanticMicroserviceDescription5 = new Gson().fromJson(descriptionContent5, SemanticMicroserviceDescription.class);
-        linkedador.registryDescription(semanticMicroserviceDescription5);
         semanticMicroserviceDescription5.setIpAddress("192.168.10.5");
         semanticMicroserviceDescription5.setServerPort("8080");
         semanticMicroserviceDescription5.setUriBase("/service/");
+        linkedador.registryDescription(semanticMicroserviceDescription5);
 
     }
 
