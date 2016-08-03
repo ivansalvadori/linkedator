@@ -22,6 +22,7 @@ import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntResource;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
@@ -71,8 +72,27 @@ public class Linkedator {
 
     public String createLinks(String resourceRepresentation, boolean verifyLinks) {
         String linkedResourceRepresentation = resourceRepresentation;
+        
+        Stopwatch time = Stopwatch.createStarted();
+
         linkedResourceRepresentation = createExplicitLinks(resourceRepresentation, verifyLinks);
+
         linkedResourceRepresentation = createInferredLinks(linkedResourceRepresentation, verifyLinks);
+
+        long elapsed = time.elapsed(TimeUnit.MICROSECONDS);
+        double processingTime = elapsed/1000.0;
+        
+        JsonElement parseRepresentation = new JsonParser().parse(linkedResourceRepresentation);
+
+        if (parseRepresentation.isJsonObject()) {
+            parseRepresentation.getAsJsonObject().addProperty("linkedatorTime", processingTime);
+        } else if (parseRepresentation.isJsonArray()) {
+            JsonObject timeObject = new JsonObject();
+            timeObject.addProperty("linkedatorTime", processingTime);
+            parseRepresentation.getAsJsonArray().add(timeObject);
+        }
+        linkedResourceRepresentation = parseRepresentation.toString();
+
         return linkedResourceRepresentation;
     }
 
@@ -163,7 +183,7 @@ public class Linkedator {
                         innerInferredObject.addProperty("http://www.w3.org/2002/07/owl#sameAs", resolvedLink);
                     }
 
-                    if (jsonElementInferredLink == null) {
+                    if (jsonElementInferredLink == null || jsonElementInferredLink.isJsonNull()) {
                         if (innerInferredObject.entrySet().size() > 0) {
                             jsonObjectResourceRepresentation.add(objectProperty.getURI(), new Gson().toJsonTree(innerInferredObject));
                         }
