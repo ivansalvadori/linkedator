@@ -1,0 +1,28 @@
+{
+ "semanticResources": [
+  {
+   "entity": "http://ssp-ontology.com#PoliceReport",
+   "properties": [
+    "http://ssp-ontology.com#numeroBoletim",
+    "http://ssp-ontology.com#dataOcorrencia",
+    "http://ssp-ontology.com#victim"
+   ],
+   "uriTemplates": [
+    {
+     "method": "GET",
+     "uri": "report/{x}",
+     "parameters": {
+      "x": "http://ssp-ontology.com#numeroBoletim"
+     }
+    },
+    {
+     "method": "GET",
+     "uri": "reports/{x}",
+     "parameters": {
+      "x": "http://ssp-ontology.com#numeroRg"
+     }
+    }
+   ]
+  }
+ ]
+}
