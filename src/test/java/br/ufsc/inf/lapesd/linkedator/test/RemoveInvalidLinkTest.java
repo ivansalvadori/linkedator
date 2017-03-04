@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.ufsc.inf.lapesd.linkedator.Linkedator;
+import br.ufsc.inf.lapesd.linkedator.ObjectPropertyBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class RemoveInvalidLinkTest {
 
-    class LinkedatorTestable extends Linkedator {
+    class LinkedatorTestable extends ObjectPropertyBasedLinkedator {
 
         public LinkedatorTestable(String ontology) {
             super(ontology);
@@ -32,7 +32,7 @@ public class RemoveInvalidLinkTest {
 
     }
 
-    Linkedator linkedador;
+    ObjectPropertyBasedLinkedator linkedador;
 
     public void addMicroserviceDescription(SemanticMicroserviceDescription semanticMicroserviceDescription) {
         linkedador.registryDescription(semanticMicroserviceDescription);

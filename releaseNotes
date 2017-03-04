@@ -1,10 +1,11 @@
 0.0.2
 =====
-Linking entities that share the same properties defined in an ontology, even when there is no object property defined to a specific relation.
+Linkedator splitted into ObjectPropertyBasedLinkedator and PropertyAndValueBasedLinkedator.
+Linking entities that share the same properties defined in an ontology, even when there is no object property defined to a specific relation -> PropertyAndValueBasedLinkedator.
 Linkedator is able to link entities described by heterogeneos ontologies when their equivalence are defined by owl:equivalentProperty or owl:equivalentClass.
 Microservice registry improved, description replaced.
 Cache configuration implemented.
-Implemented link verification - unified ontology only.
+Implemented link verification.
 Improved link creation by using URIBuilder from jersey framework.
 
 0.0.1

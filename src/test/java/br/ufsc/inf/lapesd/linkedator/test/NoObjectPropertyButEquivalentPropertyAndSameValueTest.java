@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.ufsc.inf.lapesd.linkedator.PropertyAndValueLinkedator;
+import br.ufsc.inf.lapesd.linkedator.PropertyAndValueBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
 
-    PropertyAndValueLinkedator linkedador;
+    PropertyAndValueBasedLinkedator linkedador;
 
     public void addMicroserviceDescription(SemanticMicroserviceDescription semanticMicroserviceDescription) {
         linkedador.registryDescription(semanticMicroserviceDescription);
@@ -24,7 +24,7 @@ public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
     public void configure() throws IOException {
 
         String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/mergedDomainOntology.owl"), "UTF-8");
-        linkedador = new PropertyAndValueLinkedator(ontology);
+        linkedador = new PropertyAndValueBasedLinkedator(ontology);
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/microserviceOfPeopleDescription.jsonld"),
                 "UTF-8");
@@ -47,7 +47,7 @@ public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
     @Test
     public void mustCreateExplicitLinkInPoliceRepor() throws IOException {
         String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/policeReport.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(policeReport);
+        String linkedRepresentation = linkedador.createLinks(policeReport, false);
         System.out.println(linkedRepresentation);
         String expectedLink = "http://www.w3.org/2000/01/rdf-schema#seeAlso\":[\"http://192.168.10.2:8080/service/reports/123\",\"http://192.168.10.1:8080/service/vitima?x=123&y=456\"]";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink));
@@ -56,7 +56,7 @@ public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
     @Test
     public void mustCreateReverseLinksInPerson() throws IOException {
         String person = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/person.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(person);
+        String linkedRepresentation = linkedador.createLinks(person, false);
         System.out.println(linkedRepresentation);
         String expectedLink = "http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"http://192.168.10.2:8080/service/reports/123";
         Assert.assertTrue(linkedRepresentation.contains(expectedLink));

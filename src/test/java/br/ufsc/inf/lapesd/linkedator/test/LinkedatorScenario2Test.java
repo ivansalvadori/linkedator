@@ -9,18 +9,18 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.ufsc.inf.lapesd.linkedator.Linkedator;
+import br.ufsc.inf.lapesd.linkedator.ObjectPropertyBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class LinkedatorScenario2Test {
 
-    Linkedator linkedador;
+    ObjectPropertyBasedLinkedator linkedador;
 
     @Before
     public void configureSc2() throws IOException {
 
         String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/domainOntology.owl"), "UTF-8");
-        linkedador = new Linkedator(ontology);
+        linkedador = new ObjectPropertyBasedLinkedator(ontology);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);

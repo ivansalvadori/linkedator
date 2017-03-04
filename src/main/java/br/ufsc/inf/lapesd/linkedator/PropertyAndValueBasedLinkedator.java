@@ -8,9 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -20,13 +29,28 @@ import com.google.gson.JsonPrimitive;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
-public class PropertyAndValueLinkedator {
+public class PropertyAndValueBasedLinkedator {
 
     private OntologyReader ontologyReader;
     private Map<String, SemanticMicroserviceDescription> registeredMicroservices = new HashMap<>();
 
-    public PropertyAndValueLinkedator(String ontology) {
+    private boolean cacheEnabled = true;
+    private int cacheMaximumSize = 100;
+    private int cacheExpireAfterAccessSeconds = 30;
+    private Cache<String, Boolean> linkCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(cacheMaximumSize).expireAfterAccess(cacheExpireAfterAccessSeconds, TimeUnit.SECONDS).build();
+
+    public PropertyAndValueBasedLinkedator(String ontology) {
         this.ontologyReader = new OntologyReader(ontology);
+    }
+
+    public void enableCache(boolean enable) {
+        this.cacheEnabled = enable;
+    }
+
+    public void setCacheConfiguration(int maximumSize, int expireAfterAccessSeconds, Cache<String, Boolean> linkCache) {
+        this.cacheExpireAfterAccessSeconds = expireAfterAccessSeconds;
+        this.cacheMaximumSize = maximumSize;
+        this.linkCache = linkCache;
     }
 
     public void registryDescription(SemanticMicroserviceDescription semanticMicroserviceDescription) {
@@ -44,7 +68,7 @@ public class PropertyAndValueLinkedator {
         }
     }
 
-    public String createLinks(String resourceRepresentation) {
+    public String createLinks(String resourceRepresentation, boolean verifyLinks) {
         String linkedResourceRepresentation = resourceRepresentation;
 
         JsonElement parseRepresentation = new JsonParser().parse(resourceRepresentation);
@@ -74,7 +98,6 @@ public class PropertyAndValueLinkedator {
                             Set<String> equivalentProperties = loadEquivalentProperties(listAllPropertyIds);
 
                             List<UriTemplate> uriTemplates = semanticResource.getUriTemplates();
-                            // uriTemplates.addAll(searchForMoreUriTemplates(equivalentProperties));
 
                             for (UriTemplate uriTemplate : uriTemplates) {
                                 Map<String, String> parameters = uriTemplate.getParameters();
@@ -89,7 +112,11 @@ public class PropertyAndValueLinkedator {
 
                                 if (satisfied) {
                                     String resolvedLink = resolveLink(semanticMicroserviceDescription.getMicroserviceFullPath(), uriTemplate, resourceRepresentation);
-                                    System.out.println(resolvedLink);
+
+                                    if ((verifyLinks && !isLinkValid(resolvedLink))) {
+                                        continue;
+                                    }
+
                                     if (linkedResourceRepresentation.contains(resolvedLink)) {
                                         continue;
                                     }
@@ -107,7 +134,6 @@ public class PropertyAndValueLinkedator {
                                         } else if (representationJsonObject.get("http://www.w3.org/2000/01/rdf-schema#seeAlso").isJsonArray()) {
                                             representationJsonObject.get("http://www.w3.org/2000/01/rdf-schema#seeAlso").getAsJsonArray().add(new JsonPrimitive(resolvedLink));
                                         }
-
                                     }
 
                                     linkedResourceRepresentation = element.toString();
@@ -117,7 +143,7 @@ public class PropertyAndValueLinkedator {
                     }
                 }
                 if (entry.getValue().isJsonObject()) {
-                    String innerObjectLinked = createLinks(entry.getValue().toString());
+                    String innerObjectLinked = createLinks(entry.getValue().toString(), verifyLinks);
                     JsonElement innerElement = new JsonParser().parse(innerObjectLinked);
                     JsonElement element = new JsonParser().parse(linkedResourceRepresentation);
                     element.getAsJsonObject().add(entry.getKey(), innerElement);
@@ -181,6 +207,60 @@ public class PropertyAndValueLinkedator {
         }
 
         return eqvProperties;
+    }
+
+    protected boolean isLinkValid(String link) {
+        if (!cacheEnabled) {
+            return isLinkValidNoCache(link);
+        }
+
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget = client.target(link).queryParam("linkedatorOptions", "linkVerify");
+
+        Boolean isCached = linkCache.getIfPresent(link);
+        if (isCached != null) {
+            System.out.println(String.format("verifying: %s (cached)", link));
+            return isCached;
+        }
+
+        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+
+        try {
+            System.out.println(String.format("verifying: %s", link));
+            Response response = invocationBuilder.head();
+
+            int status = response.getStatus();
+            if (status == 200) {
+                linkCache.put(link, true);
+                return true;
+            }
+            linkCache.put(link, false);
+            return false;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    protected boolean isLinkValidNoCache(String link) {
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget = client.target(link).queryParam("linkedatorOptions", "linkVerify");
+
+        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+
+        try {
+            System.out.println(String.format("verifying: %s", link));
+            Response response = invocationBuilder.head();
+
+            int status = response.getStatus();
+            if (status == 200) {
+                return true;
+            }
+            return false;
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
