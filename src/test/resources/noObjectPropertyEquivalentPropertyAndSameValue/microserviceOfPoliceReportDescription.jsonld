@@ -1,0 +1,23 @@
+{
+ "semanticResources": [
+  {
+   "entity": "http://police-ontology.com#PoliceReport",
+   "uriTemplates": [
+    {
+     "method": "GET",
+     "uri": "report/{x}",
+     "parameters": {
+      "x": "http://police-ontology.com#numeroBoletim"
+     }
+    },
+    {
+     "method": "GET",
+     "uri": "reports/{x}",
+     "parameters": {
+      "x": "http://police-ontology.com#hab"
+     }
+    }
+   ]
+  }
+ ]
+}

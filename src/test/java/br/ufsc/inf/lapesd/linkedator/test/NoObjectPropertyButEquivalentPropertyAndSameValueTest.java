@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import br.ufsc.inf.lapesd.linkedator.PropertyAndValueLinkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
-public class NoObjectPropertyButSamePropertyAndValueTest {
+public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
 
     PropertyAndValueLinkedator linkedador;
 
@@ -23,17 +23,19 @@ public class NoObjectPropertyButSamePropertyAndValueTest {
     @Before
     public void configure() throws IOException {
 
-        String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/domainOntology.owl"), "UTF-8");
+        String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/mergedDomainOntology.owl"), "UTF-8");
         linkedador = new PropertyAndValueLinkedator(ontology);
 
-        String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/microserviceOfPeopleDescription.jsonld"), "UTF-8");
+        String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/microserviceOfPeopleDescription.jsonld"),
+                "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);
         microservicesDescription.setIpAddress("192.168.10.1");
         microservicesDescription.setServerPort("8080");
         microservicesDescription.setUriBase("/service/");
         linkedador.registryDescription(microservicesDescription);
 
-        String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
+        String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/microserviceOfPoliceReportDescription.jsonld"),
+                "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
         policeReportDescription.setIpAddress("192.168.10.2");
         policeReportDescription.setServerPort("8080");
@@ -44,7 +46,7 @@ public class NoObjectPropertyButSamePropertyAndValueTest {
 
     @Test
     public void mustCreateExplicitLinkInPoliceRepor() throws IOException {
-        String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/policeReport.jsonld"), "UTF-8");
+        String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/policeReport.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(policeReport);
         System.out.println(linkedRepresentation);
         String expectedLink = "http://www.w3.org/2000/01/rdf-schema#seeAlso\":[\"http://192.168.10.2:8080/service/reports/123\",\"http://192.168.10.1:8080/service/vitima?x=123&y=456\"]";
@@ -53,7 +55,7 @@ public class NoObjectPropertyButSamePropertyAndValueTest {
 
     @Test
     public void mustCreateReverseLinksInPerson() throws IOException {
-        String person = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/person.jsonld"), "UTF-8");
+        String person = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/person.jsonld"), "UTF-8");
         String linkedRepresentation = linkedador.createLinks(person);
         System.out.println(linkedRepresentation);
         String expectedLink = "http://www.w3.org/2000/01/rdf-schema#seeAlso\":\"http://192.168.10.2:8080/service/reports/123";

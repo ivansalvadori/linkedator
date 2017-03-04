@@ -1,5 +1,5 @@
 {
- "@id": "10.1.1.2/policeReport-microservice/123",
+ "@id": "10.1.1.2/service/report/123",
  "@type": "http://ssp-ontology.com#PoliceReport",
  "http://ssp-ontology.com#numeroBoletim": "123",
  "http://ssp-ontology.com#dataOcorrencia": "10/10/2000",

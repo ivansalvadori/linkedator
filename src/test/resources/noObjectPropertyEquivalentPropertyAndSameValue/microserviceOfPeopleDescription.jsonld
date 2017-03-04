@@ -1,0 +1,17 @@
+{
+  "semanticResources": [
+    {
+      "entity": "http://person-ontology/Person",
+      "uriTemplates": [
+        {
+          "method": "GET",
+          "uri": "/vitima{?x,y}",
+          "parameters": {
+            "x": "http://person-ontology#driveLicense",
+            "y": "http://person-ontology#taxId"
+          }
+        }
+      ]
+    }
+  ]
+}

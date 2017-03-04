@@ -1,0 +1,12 @@
+{
+ "@id": "192.168.10.2/service/report/123",
+ "@type": "http://police-ontology.com#PoliceReport",
+ "http://police-ontology.com#numeroBoletim": "123",
+ "http://police-ontology.com#dataOcorrencia": "10/10/2000",
+ "http://police-ontology.com#victim": 
+  {
+   "http://police-ontology.com#hab": "123",
+   "http://police-ontology.com#cpf": "456",
+   "http://police-ontology.com#dataNascimento": "10/10/2001"
+  }
+}

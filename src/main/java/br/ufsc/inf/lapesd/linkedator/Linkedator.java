@@ -74,7 +74,7 @@ public class Linkedator {
 
     public String createLinks(String resourceRepresentation, boolean verifyLinks) {
         String linkedResourceRepresentation = resourceRepresentation;
-        
+
         Stopwatch time = Stopwatch.createStarted();
 
         linkedResourceRepresentation = createExplicitLinks(resourceRepresentation, verifyLinks);
@@ -82,8 +82,8 @@ public class Linkedator {
         linkedResourceRepresentation = createInferredLinks(linkedResourceRepresentation, verifyLinks);
 
         long elapsed = time.elapsed(TimeUnit.MICROSECONDS);
-        double processingTime = elapsed/1000.0;
-        
+        double processingTime = elapsed / 1000.0;
+
         JsonElement parseRepresentation = new JsonParser().parse(linkedResourceRepresentation);
 
         if (parseRepresentation.isJsonObject()) {
@@ -159,8 +159,8 @@ public class Linkedator {
                 String objectPropertyRange = listRange.next().getURI();
                 List<SemanticResource> semanticResources = getSemanticResourceByEntity(objectPropertyRange);
                 /*
-                 * in case the range/domain os ah given obj-property have no
-                 * implementation
+                 * in case the range/domain of an given obj-property is not
+                 * present
                  */
                 if (semanticResources.isEmpty()) {
                     continue;
@@ -275,7 +275,7 @@ public class Linkedator {
 
     private UriTemplate getUriTemplateMatch(SemanticResource semanticResource, Set<String> listOfProperties) {
         UriTemplate optimalUriTemplate = null;
-        
+
         Set<String> equivalentProperties = loadEquivalentProperties(listOfProperties);
 
         List<UriTemplate> uriTemplates = semanticResource.getUriTemplates();
@@ -293,12 +293,12 @@ public class Linkedator {
     private Set<String> loadEquivalentProperties(Set<String> listOfProperties) {
         Set<String> eqvProperties = new HashSet<>(listOfProperties);
         for (String property : listOfProperties) {
-            Set<String> equivalentProperties  = this.ontologyReader.getEquivalentProperties(property);     
-            if(equivalentProperties != null){
+            Set<String> equivalentProperties = this.ontologyReader.getEquivalentProperties(property);
+            if (equivalentProperties != null) {
                 eqvProperties.addAll(equivalentProperties);
             }
         }
-        
+
         return eqvProperties;
     }
 
@@ -311,19 +311,18 @@ public class Linkedator {
         for (String param : uriTemplateParams) {
             String uriPropertyOfParam = parameters.get(param);
             Set<String> equivalentProperties = ontologyReader.getEquivalentProperties(uriPropertyOfParam);
-            if(equivalentProperties == null){
+            if (equivalentProperties == null) {
                 String paramValuepresentedInResourceRep = JsonPath.read(representation, String.format("$['%s']", uriPropertyOfParam));
                 resolvedParameters.put(param, paramValuepresentedInResourceRep);
             }
 
-            else{
+            else {
                 equivalentProperties.add(uriPropertyOfParam);
                 for (String property : equivalentProperties) {
-                    try{
+                    try {
                         String paramValuepresentedInResourceRep = JsonPath.read(representation, String.format("$['%s']", property));
                         resolvedParameters.put(param, paramValuepresentedInResourceRep);
-                    }
-                    catch (PathNotFoundException e) {
+                    } catch (PathNotFoundException e) {
                         continue;
                     }
                 }

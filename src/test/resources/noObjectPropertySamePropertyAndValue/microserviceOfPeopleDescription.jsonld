@@ -15,13 +15,6 @@
             "x": "http://ssp-ontology.com#numeroRg",
             "y": "http://ssp-ontology.com#numeroCpf"
           }
-        },
-        {
-          "method": "GET",
-          "uri": "/vitima/{x}",
-          "parameters": {
-            "x": "http://ssp-ontology.com#dataNascimento"
-          }
         }
       ]
     }

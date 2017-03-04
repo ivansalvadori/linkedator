@@ -1,5 +1,5 @@
 {
-  "@id": "10.1.1.1/people-microservice/13579",
+  "@id": "192.168.10.1:8080/service/vitima?x=123&y=456",
   "@type": "http://schema.org/Person",
    "http://ssp-ontology.com#numeroRg": "123",
    "http://ssp-ontology.com#numeroCpf": "456",  
