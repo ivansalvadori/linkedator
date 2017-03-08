@@ -14,6 +14,7 @@ public class SemanticMicroserviceDescription {
     private String serverPort;
     private String uriBase;
     private List<SemanticResource> semanticResources = new ArrayList<>();
+    private String ontologyBase64;
 
     public String getMicroserviceFullPath() {
         UriBuilder builder = UriBuilder.fromPath("http://{ipAddress}:{serverPort}").path(uriBase);
@@ -60,6 +61,14 @@ public class SemanticMicroserviceDescription {
     @Override
     public String toString() {
         return new Gson().toJson(this);
+    }
+
+    public String getOntologyBase64() {
+        return ontologyBase64;
+    }
+
+    public void setOntologyBase64(String ontologyBase64) {
+        this.ontologyBase64 = ontologyBase64;
     }
 
 }
