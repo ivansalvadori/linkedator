@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import br.ufsc.inf.lapesd.linkedator.ObjectPropertyBasedLinkedator;
+import br.ufsc.inf.lapesd.linkedator.OntologyReader;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class EquivalentPropertiesAndClassesTest {
@@ -24,7 +25,8 @@ public class EquivalentPropertiesAndClassesTest {
     public void configure() throws IOException {
 
         String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/equivalentPropertiesAndClasses/domainOntology.owl"), "UTF-8");
-        linkedador = new ObjectPropertyBasedLinkedator(ontology);
+        OntologyReader ontologyReader = new OntologyReader(ontology);
+        linkedador = new ObjectPropertyBasedLinkedator(ontologyReader);
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/equivalentPropertiesAndClasses/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);

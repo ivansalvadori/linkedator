@@ -33,6 +33,10 @@ public class OntologyReader {
         }
     }
 
+    public OntModel getOntoModel() {
+        return ontoModel;
+    }
+
     public List<ObjectProperty> getObjectProperties() {
         return objectProperties;
     }

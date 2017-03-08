@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import br.ufsc.inf.lapesd.linkedator.OntologyReader;
 import br.ufsc.inf.lapesd.linkedator.PropertyAndValueBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
@@ -24,7 +25,8 @@ public class NoObjectPropertyButSamePropertyAndValueTest {
     public void configure() throws IOException {
 
         String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/domainOntology.owl"), "UTF-8");
-        linkedador = new PropertyAndValueBasedLinkedator(ontology);
+        OntologyReader ontologyReader = new OntologyReader(ontology);
+        linkedador = new PropertyAndValueBasedLinkedator(ontologyReader);
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);

@@ -18,15 +18,23 @@ public class Linkedator {
 
     private ObjectPropertyBasedLinkedator objectPropertyBasedLinkedator = null;
     private PropertyAndValueBasedLinkedator propertyAndValueLinkedator = null;
+    private OntologyReader ontologyReader = null;
 
     public Linkedator(String ontology) {
-        this.objectPropertyBasedLinkedator = new ObjectPropertyBasedLinkedator(ontology);
+
+        ontologyReader = new OntologyReader(ontology);
+
+        this.objectPropertyBasedLinkedator = new ObjectPropertyBasedLinkedator(ontologyReader);
         this.objectPropertyBasedLinkedator.setCacheConfiguration(cacheMaximumSize, cacheExpireAfterAccessSeconds, linkCache);
         this.objectPropertyBasedLinkedator.enableCache(cacheEnabled);
 
-        this.propertyAndValueLinkedator = new PropertyAndValueBasedLinkedator(ontology);
+        this.propertyAndValueLinkedator = new PropertyAndValueBasedLinkedator(ontologyReader);
         this.propertyAndValueLinkedator.setCacheConfiguration(cacheMaximumSize, cacheExpireAfterAccessSeconds, linkCache);
         this.propertyAndValueLinkedator.enableCache(cacheEnabled);
+    }
+
+    public OntologyReader getOntologyReader() {
+        return ontologyReader;
     }
 
     public void registryMicroserviceDescription(SemanticMicroserviceDescription semanticMicroserviceDescription) {

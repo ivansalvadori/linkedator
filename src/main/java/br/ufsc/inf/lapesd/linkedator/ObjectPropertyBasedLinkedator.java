@@ -43,8 +43,8 @@ public class ObjectPropertyBasedLinkedator {
     private int cacheExpireAfterAccessSeconds = 30;
     private Cache<String, Boolean> linkCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(cacheMaximumSize).expireAfterAccess(cacheExpireAfterAccessSeconds, TimeUnit.SECONDS).build();
 
-    public ObjectPropertyBasedLinkedator(String ontology) {
-        this.ontologyReader = new OntologyReader(ontology);
+    public ObjectPropertyBasedLinkedator(OntologyReader ontologyReader) {
+        this.ontologyReader = ontologyReader;
     }
 
     public void enableCache(boolean enable) {

@@ -10,14 +10,15 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import br.ufsc.inf.lapesd.linkedator.ObjectPropertyBasedLinkedator;
+import br.ufsc.inf.lapesd.linkedator.OntologyReader;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class RemoveInvalidLinkTest {
 
     class LinkedatorTestable extends ObjectPropertyBasedLinkedator {
 
-        public LinkedatorTestable(String ontology) {
-            super(ontology);
+        public LinkedatorTestable(OntologyReader ontologyReader) {
+            super(ontologyReader);
         }
 
         @Override
@@ -42,7 +43,8 @@ public class RemoveInvalidLinkTest {
     public void configure() throws IOException {
 
         String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/domainOntology.owl"), "UTF-8");
-        linkedador = new LinkedatorTestable(ontology);
+        OntologyReader ontologyReader = new OntologyReader(ontology);
+        linkedador = new LinkedatorTestable(ontologyReader);
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);
