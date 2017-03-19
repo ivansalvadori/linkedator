@@ -33,6 +33,19 @@ public class Linkedator {
         this.propertyAndValueLinkedator.enableCache(cacheEnabled);
     }
 
+    public void updateOntology(String ontology) {
+
+        ontologyReader = new OntologyReader(ontology);
+
+        this.objectPropertyBasedLinkedator = new ObjectPropertyBasedLinkedator(ontologyReader);
+        this.objectPropertyBasedLinkedator.setCacheConfiguration(cacheMaximumSize, cacheExpireAfterAccessSeconds, linkCache);
+        this.objectPropertyBasedLinkedator.enableCache(cacheEnabled);
+
+        this.propertyAndValueLinkedator = new PropertyAndValueBasedLinkedator(ontologyReader);
+        this.propertyAndValueLinkedator.setCacheConfiguration(cacheMaximumSize, cacheExpireAfterAccessSeconds, linkCache);
+        this.propertyAndValueLinkedator.enableCache(cacheEnabled);
+    }
+
     public OntologyReader getOntologyReader() {
         return ontologyReader;
     }
