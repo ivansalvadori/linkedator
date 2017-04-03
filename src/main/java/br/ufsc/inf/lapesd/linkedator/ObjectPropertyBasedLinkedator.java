@@ -36,6 +36,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 public class ObjectPropertyBasedLinkedator {
 
     private Map<String, SemanticMicroserviceDescription> registeredMicroservices = new HashMap<>();
+
     private OntologyReader ontologyReader;
 
     private boolean cacheEnabled = true;
@@ -70,6 +71,7 @@ public class ObjectPropertyBasedLinkedator {
                 // System.out.println(microserviceFullPath + " registered");
             }
             registeredMicroservices.put(microserviceFullPath, semanticMicroserviceDescription);
+            semanticMicroserviceDescription.configureSemanticResources();
 
         } catch (Exception e) {
             throw new RuntimeException("Invalid description");

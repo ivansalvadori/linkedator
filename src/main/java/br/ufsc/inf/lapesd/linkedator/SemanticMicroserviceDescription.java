@@ -20,6 +20,18 @@ public class SemanticMicroserviceDescription {
         return uri.toASCIIString();
     }
 
+    public void configureSemanticResources() {
+        SemanticMicroserviceDescription description = new SemanticMicroserviceDescription();
+        description.setIpAddress(this.ipAddress);
+        description.setServerPort(this.serverPort);
+        description.setUriBase(this.uriBase);
+        description.setOntologyBase64(this.ontologyBase64);
+
+        for (SemanticResource semanticResource : semanticResources) {
+            semanticResource.setSemanticMicroserviceDescription(description);
+        }
+    }
+
     public String getUriBase() {
         return uriBase;
     }

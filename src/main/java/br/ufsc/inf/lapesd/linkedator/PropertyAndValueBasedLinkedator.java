@@ -62,6 +62,7 @@ public class PropertyAndValueBasedLinkedator {
                 // System.out.println(microserviceFullPath + " registered");
             }
             registeredMicroservices.put(microserviceFullPath, semanticMicroserviceDescription);
+            semanticMicroserviceDescription.configureSemanticResources();
 
         } catch (Exception e) {
             throw new RuntimeException("Invalid description");
