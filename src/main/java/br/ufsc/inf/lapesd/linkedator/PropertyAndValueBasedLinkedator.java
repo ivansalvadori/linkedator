@@ -57,9 +57,9 @@ public class PropertyAndValueBasedLinkedator {
         try {
             String microserviceFullPath = semanticMicroserviceDescription.getMicroserviceFullPath();
             if (registeredMicroservices.get(microserviceFullPath) != null) {
-                System.out.println(microserviceFullPath + " updated");
+                // System.out.println(microserviceFullPath + " updated");
             } else {
-                System.out.println(microserviceFullPath + " registered");
+                // System.out.println(microserviceFullPath + " registered");
             }
             registeredMicroservices.put(microserviceFullPath, semanticMicroserviceDescription);
 
@@ -219,14 +219,12 @@ public class PropertyAndValueBasedLinkedator {
 
         Boolean isCached = linkCache.getIfPresent(link);
         if (isCached != null) {
-            System.out.println(String.format("verifying: %s (cached)", link));
             return isCached;
         }
 
         Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 
         try {
-            System.out.println(String.format("verifying: %s", link));
             Response response = invocationBuilder.head();
 
             int status = response.getStatus();

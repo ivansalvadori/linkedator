@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 
-import com.google.gson.Gson;
-
 public class SemanticMicroserviceDescription {
 
     private String ipAddress;
@@ -31,10 +29,6 @@ public class SemanticMicroserviceDescription {
     }
 
     public List<SemanticResource> getSemanticResources() {
-        /* Workarround */
-        for (SemanticResource semanticResource : semanticResources) {
-            semanticResource.setSemanticMicroserviceDescription(this);
-        }
         return semanticResources;
     }
 
@@ -56,11 +50,6 @@ public class SemanticMicroserviceDescription {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
-    }
-
-    @Override
-    public String toString() {
-        return new Gson().toJson(this);
     }
 
     public String getOntologyBase64() {
