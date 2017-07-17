@@ -15,9 +15,11 @@ public class SemanticMicroserviceDescription {
     private String ontologyBase64;
 
     public String getMicroserviceFullPath() {
-        UriBuilder builder = UriBuilder.fromPath("http://{ipAddress}:{serverPort}").path(uriBase);
-        URI uri = builder.build(ipAddress, serverPort);
-        return uri.toASCIIString();
+        int port = 80;
+        if (serverPort != null)
+            port = Integer.parseInt(serverPort);
+        String base = "http://" + ipAddress + (port != 80 ? ":"+port : "");
+        return UriBuilder.fromPath(base).path(uriBase).build().toASCIIString();
     }
 
     public void configureSemanticResources() {

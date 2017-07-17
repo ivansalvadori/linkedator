@@ -1,8 +1,16 @@
 package br.ufsc.inf.lapesd.linkedator.test;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import br.ufsc.inf.lapesd.linkedator.ModelBasedLinkedator;
+import br.ufsc.inf.lapesd.linkedator.links.NullLinkVerifier;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,66 +23,88 @@ import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class LinkedatorScenario4Test {
 
-    ObjectPropertyBasedLinkedator linkedador;
-
-    public void addMicroserviceDescription(SemanticMicroserviceDescription semanticMicroserviceDescription) {
-        linkedador.registryDescription(semanticMicroserviceDescription);
-    }
+    ModelBasedLinkedator linkedator;
 
     @Before
     public void configure() throws IOException {
 
-        String ontology = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/domainOntology.owl"), "UTF-8");
-        OntologyReader ontologyReader = new OntologyReader(ontology);
-        linkedador = new ObjectPropertyBasedLinkedator(ontologyReader);
+        linkedator = new ModelBasedLinkedator();
+        try (InputStream in = this.getClass().getResourceAsStream("/scenario4/domainOntology.owl")) {
+            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.RDFXML);
+        }
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);
         microservicesDescription.setIpAddress("192.168.10.1");
         microservicesDescription.setServerPort("8080");
         microservicesDescription.setUriBase("/service/");
-        linkedador.registryDescription(microservicesDescription);
+        linkedator.registerDescription(microservicesDescription);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
         policeReportDescription.setIpAddress("192.168.10.2");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
-        linkedador.registryDescription(policeReportDescription);
+        linkedator.registerDescription(policeReportDescription);
 
     }
 
     @Test
     public void mustCreateExplicitLinkInPoliceRepor() throws IOException {
-        String policeReport = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/policeReportArray.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(policeReport, false);
-        System.out.println(linkedRepresentation);
-        String expectedLink = "\"http://ssp-ontology.com#victim\":{\"http://ssp-ontology.com#numeroRg\":\"123456\",\"@type\":\"http://schema.org/Person\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/123456\"}";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLink));
+        Model model = ModelFactory.createDefaultModel();
+        try (InputStream in = this.getClass().getResourceAsStream("/scenario4/policeReportArray.jsonld")) {
+            RDFDataMgr.read(model, in, Lang.JSONLD);
+        }
+        linkedator.createLinks(model, new NullLinkVerifier());
 
-        String expectedLink2 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/654321";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLink2));
-
-        String expectedLink3 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/6758493";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLink3));
-
-        String expectedLink4 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.1:8080/service/vitima/4433221111";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLink4));
+        Assert.assertTrue(QueryExecutionFactory.create(TestUtils.SPARQL_PROLOGUE +
+                "ASK WHERE {\n" +
+                "  <http://10.1.1.2/policeReport-microservice/123> ssp:victim ?v1.\n" +
+                "  ?v1 a sch:Person.\n" +
+                "  ?v1 owl:sameAs <http://192.168.10.1:8080/service/vitima/123456>.\n" +
+                "}", model).execAsk());
+        Assert.assertTrue(QueryExecutionFactory.create(TestUtils.SPARQL_PROLOGUE +
+                "ASK WHERE {\n" +
+                "  <http://10.1.1.2/policeReport-microservice/456> ssp:victim ?v1.\n" +
+                "  ?v1 a sch:Person.\n" +
+                "  ?v1 owl:sameAs <http://192.168.10.1:8080/service/vitima/654321>.\n" +
+                "}", model).execAsk());
+        Assert.assertTrue(QueryExecutionFactory.create(TestUtils.SPARQL_PROLOGUE +
+                "ASK WHERE {\n" +
+                "  <http://10.1.1.2/policeReport-microservice/789> ssp:victim ?v1, ?v2.\n" +
+                "  ?v1 a sch:Person.\n" +
+                "  ?v1 owl:sameAs <http://192.168.10.1:8080/service/vitima/6758493>.\n" +
+                "  ?v2 a sch:Person.\n" +
+                "  ?v2 owl:sameAs <http://192.168.10.1:8080/service/vitima/4433221111>.\n" +
+                "}", model).execAsk());
     }
 
     @Test
     public void mustCreateInferredLinkInPerson() throws IOException {
-        String person = IOUtils.toString(this.getClass().getResourceAsStream("/scenario4/personArray.jsonld"), "UTF-8");
-        String linkedRepresentation = linkedador.createLinks(person, false);
-        System.out.println(linkedRepresentation);
-        String expectedLinked = "\"http://ssp-ontology.com#envolvedIn\":{\"@type\":\"http://ssp-ontology.com#PoliceReport\",\"http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/13579\"}";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLinked));
+        Model model = ModelFactory.createDefaultModel();
+        try (InputStream in = this.getClass().getResourceAsStream("/scenario4/personArray.jsonld")) {
+            RDFDataMgr.read(model, in, Lang.JSONLD);
+        }
 
-        String expectedLinked1 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/5555";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLinked1));
-
-        String expectedLinked2 = "http://www.w3.org/2002/07/owl#sameAs\":\"http://192.168.10.2:8080/service/reports/666";
-        Assert.assertTrue(linkedRepresentation.contains(expectedLinked2));
+        linkedator.createLinks(model, new NullLinkVerifier());
+        Assert.assertTrue(QueryExecutionFactory.create(TestUtils.SPARQL_PROLOGUE +
+                "ASk WHERE {\n" +
+                "  <http://10.1.1.1/people-microservice/13579> ssp:envolvedIn ?r.\n" +
+                "  ?r a ssp:PoliceReport;\n" +
+                "     owl:sameAs <http://192.168.10.2:8080/service/reports/13579>.\n" +
+                "}", model).execAsk());
+        Assert.assertTrue(QueryExecutionFactory.create(TestUtils.SPARQL_PROLOGUE +
+                "ASk WHERE {\n" +
+                "  <http://10.1.1.1/people-microservice/5555> ssp:envolvedIn ?r.\n" +
+                "  ?r a ssp:PoliceReport;\n" +
+                "     owl:sameAs <http://192.168.10.2:8080/service/reports/5555>.\n" +
+                "}", model).execAsk());
+        Assert.assertTrue(QueryExecutionFactory.create(TestUtils.SPARQL_PROLOGUE +
+                "ASk WHERE {\n" +
+                "  <http://10.1.1.1/people-microservice/666> ssp:envolvedIn ?r.\n" +
+                "  ?r a ssp:PoliceReport;\n" +
+                "     owl:sameAs <http://192.168.10.2:8080/service/reports/666>.\n" +
+                "}", model).execAsk());
     }
 
 }
