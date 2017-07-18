@@ -6,7 +6,6 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
-import org.apache.jena.shared.JenaException;
 import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -20,24 +19,65 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-public class ModelBasedLinkedator {
+public class ModelBasedLinkedator implements Linkedator {
+    private ReadWriteLock ontologiesLock = new ReentrantReadWriteLock();
     private Model ontologies = ModelFactory.createDefaultModel();
     private ReasonerBox reasonerBox = new ReasonerBox();
     private UriTemplateIndex uriTemplateIndex = new UriTemplateIndex();
     private static final Logger logger = LoggerFactory.getLogger(ModelBasedLinkedator.class);
 
 
-    public void createLinks(Model model, LinkVerifier linkVerifier) {
-        //TODO catch JenaExceptions, do not commit modifications to model, and throw Informative exception
-        InfModel infModel = ModelFactory.createInfModel(getReasoner().bind(model.getGraph()));
-        for (ResIterator it = infModel.listSubjects(); it.hasNext(); ) {
-            Resource subject = it.next();
-            addInferredTypes(subject, model);
-            createExplicitLinks(subject, model, linkVerifier);
-            createInferredLinks(subject, model, linkVerifier);
+    @Override
+    public void createLinks(@Nonnull Model model, @Nonnull LinkVerifier linkVerifier) {
+        ontologiesLock.readLock().lock();
+        try {
+            //TODO catch JenaExceptions, do not commit modifications to model, and throw Informative exception
+            InfModel infModel = ModelFactory.createInfModel(getReasoner().bind(model.getGraph()));
+            for (ResIterator it = model.listSubjects(); it.hasNext(); ) {
+                Resource subject = it.next();
+                subject = subject.isAnon()
+                        ? infModel.createResource(subject.getId())
+                        : infModel.createResource(subject.getURI());
+                addInferredTypes(subject, model);
+                createExplicitLinks(subject, model, linkVerifier);
+                createInferredLinks(subject, model, linkVerifier);
+            }
+        } finally {
+            ontologiesLock.readLock().unlock();
         }
+    }
+
+    @Override
+    public void updateOntologies(@Nonnull Model model) {
+        ontologiesLock.writeLock().lock();
+        try {
+            ontologies.removeAll().add(model);
+        } finally {
+            ontologiesLock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public void register(@Nonnull SemanticMicroserviceDescription smd) {
+        uriTemplateIndex.register(smd);
+    }
+
+    @Nonnull
+    public Reasoner getReasoner() {
+        return reasonerBox.get();
+    }
+
+    public void setReasoner(@Nonnull Reasoner reasoner) {
+        this.reasonerBox.set(reasoner);
+    }
+
+    @Nonnull
+    public Model getOntologies() {
+        return ontologies;
     }
 
     private void addInferredTypes(Resource subject, Model out) {
@@ -54,7 +94,7 @@ public class ModelBasedLinkedator {
                     Property link = subject.hasProperty(RDF.type, m.getType())
                             ? OWL2.sameAs : RDFS.seeAlso;
                     out.add(subject, link, out.createResource(m.getUri()));
-        });
+                });
     }
 
     private void createInferredLinks(Resource subject, Model out, LinkVerifier linkVerifier) {
@@ -81,24 +121,6 @@ public class ModelBasedLinkedator {
         }
     }
 
-    public void registerDescription(SemanticMicroserviceDescription smd) {
-        uriTemplateIndex.register(smd);
-    }
-
-    @Nonnull
-    public Reasoner getReasoner() {
-        return reasonerBox.get();
-    }
-
-    public void setReasoner(@Nonnull Reasoner reasoner) {
-        this.reasonerBox.set(reasoner);
-    }
-
-    @Nonnull
-    public Model getOntologies() {
-        return ontologies;
-    }
-
     private class ReasonerBox {
         private Reasoner reasoner;
 
@@ -111,7 +133,7 @@ public class ModelBasedLinkedator {
                     List<Rule> rules = Rule.parseRules(Rule.rulesParserFromReader(reader));
                     GenericRuleReasoner gReasoner = new GenericRuleReasoner(rules);
                     gReasoner.setMode(GenericRuleReasoner.FORWARD);
-                    reasoner = gReasoner.bindSchema(ontologies.getGraph());
+                    reasoner = gReasoner.bindSchema(ontologies);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

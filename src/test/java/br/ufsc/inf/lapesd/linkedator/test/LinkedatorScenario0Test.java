@@ -10,7 +10,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.Assert;
@@ -43,14 +42,14 @@ public class LinkedatorScenario0Test {
         microservicesDescription.setIpAddress("192.168.10.1");
         microservicesDescription.setServerPort("8080");
         microservicesDescription.setUriBase("/service/");
-        linkedator.registerDescription(microservicesDescription);
+        linkedator.register(microservicesDescription);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
         policeReportDescription.setIpAddress("192.168.10.2");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
-        linkedator.registerDescription(policeReportDescription);
+        linkedator.register(policeReportDescription);
 
     }
 

@@ -17,8 +17,6 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.ufsc.inf.lapesd.linkedator.ObjectPropertyBasedLinkedator;
-import br.ufsc.inf.lapesd.linkedator.OntologyReader;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class RemoveInvalidLinkTest {
@@ -46,14 +44,14 @@ public class RemoveInvalidLinkTest {
         microservicesDescription.setIpAddress("192.168.10.1");
         microservicesDescription.setServerPort("8080");
         microservicesDescription.setUriBase("/service/");
-        linkedator.registerDescription(microservicesDescription);
+        linkedator.register(microservicesDescription);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
         policeReportDescription.setIpAddress("192.168.10.2");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
-        linkedator.registerDescription(policeReportDescription);
+        linkedator.register(policeReportDescription);
 
     }
 

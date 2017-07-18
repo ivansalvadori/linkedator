@@ -33,13 +33,13 @@ public class DoNotAddSelfLinksTest {
         microservicesDescription.setIpAddress("10.1.1.2");
         microservicesDescription.setServerPort("80");
         microservicesDescription.setUriBase("/policeReport-microservice/");
-        linkedator.registerDescription(microservicesDescription);
+        linkedator.register(microservicesDescription);
 
         SemanticMicroserviceDescription otherDescription = new Gson().fromJson(microserviceOfPoliceReportDescription, SemanticMicroserviceDescription.class);
         otherDescription.setIpAddress("10.1.1.3");
         otherDescription.setServerPort("80");
         otherDescription.setUriBase("/policeReport-microservice/");
-        linkedator.registerDescription(otherDescription);
+        linkedator.register(otherDescription);
     }
     @Test
     public void noSelfLinkPerson() throws IOException {

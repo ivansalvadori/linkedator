@@ -17,8 +17,6 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.ufsc.inf.lapesd.linkedator.ObjectPropertyBasedLinkedator;
-import br.ufsc.inf.lapesd.linkedator.OntologyReader;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class LinkedatorScenario1Test {
@@ -37,21 +35,21 @@ public class LinkedatorScenario1Test {
         microservicesDescription.setIpAddress("192.168.10.1");
         microservicesDescription.setServerPort("8080");
         microservicesDescription.setUriBase("/service/");
-        linkedator.registerDescription(microservicesDescription);
+        linkedator.register(microservicesDescription);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);
         policeReportDescription.setIpAddress("192.168.10.2");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
-        linkedator.registerDescription(policeReportDescription);
+        linkedator.register(policeReportDescription);
 
         String animalReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario1/microserviceOfAnimalDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription animalReportDescription = new Gson().fromJson(animalReportDescriptionContent, SemanticMicroserviceDescription.class);
         animalReportDescription.setIpAddress("192.168.10.3");
         animalReportDescription.setServerPort("8080");
         animalReportDescription.setUriBase("/service/");
-        linkedator.registerDescription(animalReportDescription);
+        linkedator.register(animalReportDescription);
     }
 
     @Test

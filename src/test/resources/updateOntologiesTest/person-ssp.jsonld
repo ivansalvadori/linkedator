@@ -1,0 +1,7 @@
+{
+  "@id": "http://10.1.1.1/people-microservice/13579",
+  "@type": "http://schema.org/Person",
+  "http://ssp-ontology.com#numeroRg": "13579",
+  "http://ssp-ontology.com#numeroCpf": "4444",
+  "http://schema.org#name": "Joseph da Silva"
+}

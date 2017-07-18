@@ -20,7 +20,10 @@ public class UriTemplateIndex {
     LinkedHashSet<SemanticMicroserviceDescription> descriptions = new LinkedHashSet<>();
 
     @Nonnull
-    public UriTemplateIndex register(SemanticMicroserviceDescription smd) {
+    public UriTemplateIndex register(@Nonnull SemanticMicroserviceDescription smd) {
+        Preconditions.checkArgument(smd.getSemanticResources().stream().noneMatch(Objects::isNull));
+        Preconditions.checkArgument(smd.getSemanticResources().stream()
+                .flatMap(sr -> sr.getUriTemplates().stream()).noneMatch(Objects::isNull));
         descriptions.add(smd);
         return this;
     }

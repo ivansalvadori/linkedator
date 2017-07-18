@@ -10,8 +10,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.Assert;
@@ -20,8 +18,6 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.ufsc.inf.lapesd.linkedator.ObjectPropertyBasedLinkedator;
-import br.ufsc.inf.lapesd.linkedator.OntologyReader;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 import static br.ufsc.inf.lapesd.linkedator.test.TestUtils.SPARQL_PROLOGUE;
@@ -45,28 +41,28 @@ public class LinkedatorScenario2Test {
         policeReportDescription.setIpAddress("192.168.10.1");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
-        linkedator.registerDescription(policeReportDescription);
+        linkedator.register(policeReportDescription);
 
         String vehicleDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfVehicleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription vehicleDescription = new Gson().fromJson(vehicleDescriptionContent, SemanticMicroserviceDescription.class);
         vehicleDescription.setIpAddress("192.168.10.2");
         vehicleDescription.setServerPort("8080");
         vehicleDescription.setUriBase("/service/");
-        linkedator.registerDescription(vehicleDescription);
+        linkedator.register(vehicleDescription);
 
         String imobiliaryDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfImobiliaryDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription imobiliaryDescription = new Gson().fromJson(imobiliaryDescriptionContent, SemanticMicroserviceDescription.class);
         imobiliaryDescription.setIpAddress("192.168.10.3");
         imobiliaryDescription.setServerPort("8080");
         imobiliaryDescription.setUriBase("/service/");
-        linkedator.registerDescription(imobiliaryDescription);
+        linkedator.register(imobiliaryDescription);
 
         String bankAccountDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfBankAccountDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription bankAccountDescription = new Gson().fromJson(bankAccountDescriptionContent, SemanticMicroserviceDescription.class);
         bankAccountDescription.setIpAddress("192.168.10.4");
         bankAccountDescription.setServerPort("8080");
         bankAccountDescription.setUriBase("/service/");
-        linkedator.registerDescription(bankAccountDescription);
+        linkedator.register(bankAccountDescription);
 
     }
 

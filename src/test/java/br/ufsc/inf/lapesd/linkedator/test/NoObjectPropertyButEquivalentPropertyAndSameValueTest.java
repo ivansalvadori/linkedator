@@ -17,8 +17,6 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import br.ufsc.inf.lapesd.linkedator.OntologyReader;
-import br.ufsc.inf.lapesd.linkedator.PropertyAndValueBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
@@ -38,7 +36,7 @@ public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
         microservicesDescription.setIpAddress("192.168.10.1");
         microservicesDescription.setServerPort("8080");
         microservicesDescription.setUriBase("/service/");
-        linkedator.registerDescription(microservicesDescription);
+        linkedator.register(microservicesDescription);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertyEquivalentPropertyAndSameValue/microserviceOfPoliceReportDescription.jsonld"),
                 "UTF-8");
@@ -46,7 +44,7 @@ public class NoObjectPropertyButEquivalentPropertyAndSameValueTest {
         policeReportDescription.setIpAddress("192.168.10.2");
         policeReportDescription.setServerPort("8080");
         policeReportDescription.setUriBase("/service/");
-        linkedator.registerDescription(policeReportDescription);
+        linkedator.register(policeReportDescription);
 
     }
 
