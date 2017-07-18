@@ -34,7 +34,7 @@
 
 #Infer a rdf:Property without importing all OWL axioms
 [objProp: (?P rdf:type owl:ObjectProperty) -> (?P rdf:type rdf:Property)]
-[datProp: (?P rdf:type owl:DataProperty) -> (?P rdf:type rdf:Property)]
+[datProp: (?P rdf:type owl:DatatypeProperty) -> (?P rdf:type rdf:Property)]
 
 #Infer statements from equivalentClass and equivalentProperty
 [eqProp: (?x ?p ?y), (?p owl:equivalentProperty ?q) -> (?x ?q ?y)]
