@@ -27,6 +27,12 @@ public interface Linkedator {
     void updateOntologies(@Nonnull Model model);
 
     /**
+     * Adds all triples in model to the union ontologies model. Triples are copied, therefore
+     * future changes to model will not be visible to Linkedator.
+     */
+    void addToOntologies(@Nonnull Model model);
+
+    /**
      * Register the given service documentation for use in link generation.
      */
     void register(@Nonnull SemanticMicroserviceDescription semanticMicroserviceDescription);

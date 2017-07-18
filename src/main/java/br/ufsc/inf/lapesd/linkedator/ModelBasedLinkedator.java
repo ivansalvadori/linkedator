@@ -62,6 +62,16 @@ public class ModelBasedLinkedator implements Linkedator {
     }
 
     @Override
+    public void addToOntologies(@Nonnull Model model) {
+        ontologiesLock.writeLock().lock();
+        try {
+            ontologies.add(model);
+        } finally {
+            ontologiesLock.writeLock().unlock();
+        }
+    }
+
+    @Override
     public void register(@Nonnull SemanticMicroserviceDescription smd) {
         uriTemplateIndex.register(smd);
     }
