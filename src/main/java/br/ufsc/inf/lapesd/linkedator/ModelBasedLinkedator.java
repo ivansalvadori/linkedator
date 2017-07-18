@@ -2,6 +2,7 @@ package br.ufsc.inf.lapesd.linkedator;
 
 import br.ufsc.inf.lapesd.linkedator.links.LinkVerifier;
 import br.ufsc.inf.lapesd.linkedator.templates.UriTemplateIndex;
+import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
@@ -28,24 +29,38 @@ public class ModelBasedLinkedator implements Linkedator {
     private Model ontologies = ModelFactory.createDefaultModel();
     private ReasonerBox reasonerBox = new ReasonerBox();
     private UriTemplateIndex uriTemplateIndex = new UriTemplateIndex();
-    private static final Logger logger = LoggerFactory.getLogger(ModelBasedLinkedator.class);
-
 
     @Override
     public void createLinks(@Nonnull Model model, @Nonnull LinkVerifier linkVerifier) {
         ontologiesLock.readLock().lock();
         try {
-            //TODO catch JenaExceptions, do not commit modifications to model, and throw Informative exception
+            Model out = ModelFactory.createDefaultModel();
             InfModel infModel = ModelFactory.createInfModel(getReasoner().bind(model.getGraph()));
             for (ResIterator it = model.listSubjects(); it.hasNext(); ) {
                 Resource subject = it.next();
                 subject = subject.isAnon()
                         ? infModel.createResource(subject.getId())
                         : infModel.createResource(subject.getURI());
-                addInferredTypes(subject, model);
-                createExplicitLinks(subject, model, linkVerifier);
-                createInferredLinks(subject, model, linkVerifier);
+                addInferredTypes(subject, out);
+                createExplicitLinks(subject, out, linkVerifier);
+                createInferredLinks(subject, out, linkVerifier);
             }
+            model.add(out); //only add links if successful
+        } catch (Exception e) {
+            throw new LinkCreationException(e);
+        } finally {
+            ontologiesLock.readLock().unlock();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public Model getOntologies() {
+        ontologiesLock.readLock().lock();
+        try {
+            Model copy = ModelFactory.createDefaultModel();
+            copy.add(ontologies);
+            return copy;
         } finally {
             ontologiesLock.readLock().unlock();
         }
@@ -83,11 +98,6 @@ public class ModelBasedLinkedator implements Linkedator {
 
     public void setReasoner(@Nonnull Reasoner reasoner) {
         this.reasonerBox.set(reasoner);
-    }
-
-    @Nonnull
-    public Model getOntologies() {
-        return ontologies;
     }
 
     private void addInferredTypes(Resource subject, Model out) {

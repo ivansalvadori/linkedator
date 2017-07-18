@@ -16,8 +16,21 @@ public interface Linkedator {
      * @param model Model where links will be created
      * @param linkVerifier used to check if links are reachable. Only reachable links are
      *                     added. Use {@link NullLinkVerifier} to disable validation.
+     *
+     * @throws LinkCreationException if something goes wrong while creating links. This exception
+     * will wrap any other exceptions such as RDF parser errors of IOExceptions. If thrown, the
+     * model parameter will have no side effects observable, even if the exception cause was
+     * thrown late in the link creation process.
      */
-    void createLinks(@Nonnull Model model, @Nonnull LinkVerifier linkVerifier);
+    void createLinks(@Nonnull Model model, @Nonnull LinkVerifier linkVerifier)
+            throws LinkCreationException;
+
+    /**
+     * A read-only model with all known ontologies.
+     *
+     * This model is a snapshot
+     */
+    @Nonnull Model getOntologies();
 
     /**
      * Replaces the ontologies model used for reasoning and link creation with the one provided.

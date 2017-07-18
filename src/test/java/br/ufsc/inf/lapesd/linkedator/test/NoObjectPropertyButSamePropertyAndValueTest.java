@@ -3,6 +3,7 @@ package br.ufsc.inf.lapesd.linkedator.test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.ModelBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.links.NullLinkVerifier;
 import org.apache.commons.io.IOUtils;
@@ -20,15 +21,12 @@ import com.google.gson.Gson;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class NoObjectPropertyButSamePropertyAndValueTest {
-
-    ModelBasedLinkedator linkedator;
+    Linkedator linkedator;
 
     @Before
     public void configure() throws IOException {
-        linkedator = new ModelBasedLinkedator();
-        try (InputStream in = this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/domainOntology.owl")) {
-            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.RDFXML);
-        }
+        linkedator = TestUtils.createLinkedator(getClass().getResourceAsStream(
+                "/noObjectPropertySamePropertyAndValue/domainOntology.owl"), Lang.RDFXML);
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/noObjectPropertySamePropertyAndValue/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);

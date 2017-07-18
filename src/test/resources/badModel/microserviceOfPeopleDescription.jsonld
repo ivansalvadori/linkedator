@@ -1,0 +1,16 @@
+{
+  "semanticResources": [
+    {
+      "entity": "http://schema.org/Person",
+      "uriTemplates": [
+        {
+          "method": "GET",
+          "uri": "person/{x}",
+          "parameters": {
+            "x": "http://newontology#rg"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -3,6 +3,7 @@ package br.ufsc.inf.lapesd.linkedator.test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.ModelBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.links.LinkVerifier;
 import br.ufsc.inf.lapesd.linkedator.links.NullLinkVerifier;
@@ -25,16 +26,14 @@ import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 
 public class LinkedatorScenario2Test {
 
-    ModelBasedLinkedator linkedator;
+    Linkedator linkedator;
     LinkVerifier verifier;
 
     @Before
     public void configureSc2() throws IOException {
         verifier = new NullLinkVerifier();
-        linkedator = new ModelBasedLinkedator();
-        try (InputStream in = getClass().getResourceAsStream("/scenario2/domainOntology.owl")) {
-            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.RDFXML);
-        }
+        linkedator = TestUtils.createLinkedator(getClass().getResourceAsStream(
+                "/scenario2/domainOntology.owl"), Lang.RDFXML);
 
         String policeReportDescriptionContent = IOUtils.toString(this.getClass().getResourceAsStream("/scenario2/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription policeReportDescription = new Gson().fromJson(policeReportDescriptionContent, SemanticMicroserviceDescription.class);

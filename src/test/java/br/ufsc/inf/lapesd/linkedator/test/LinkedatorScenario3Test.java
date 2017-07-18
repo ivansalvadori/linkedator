@@ -3,6 +3,7 @@ package br.ufsc.inf.lapesd.linkedator.test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.ModelBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.links.NullLinkVerifier;
 import org.apache.commons.io.IOUtils;
@@ -21,14 +22,12 @@ import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 
 public class LinkedatorScenario3Test {
 
-    ModelBasedLinkedator linkedator;
+    Linkedator linkedator;
 
     @Before
     public void configureSc3() throws IOException {
-        linkedator = new ModelBasedLinkedator();
-        try (InputStream in = this.getClass().getResourceAsStream("/scenario3/domainOntology.owl")) {
-            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.RDFXML);
-        }
+        linkedator = TestUtils.createLinkedator(getClass().getResourceAsStream(
+                "/scenario3/domainOntology.owl"), Lang.RDFXML);
 
         String descriptionContent1 = IOUtils.toString(this.getClass().getResourceAsStream("/scenario3/microserviceBankOfAmericaDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription semanticMicroserviceDescription1 = new Gson().fromJson(descriptionContent1, SemanticMicroserviceDescription.class);

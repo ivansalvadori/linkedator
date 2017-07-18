@@ -3,6 +3,7 @@ package br.ufsc.inf.lapesd.linkedator.test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.ModelBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.links.LinkVerifier;
 import org.apache.commons.io.IOUtils;
@@ -30,14 +31,12 @@ public class RemoveInvalidLinkTest {
         }
     }
 
-    private ModelBasedLinkedator linkedator;
+    private Linkedator linkedator;
 
     @Before
     public void configure() throws IOException {
-        linkedator = new ModelBasedLinkedator();
-        try (InputStream in = this.getClass().getResourceAsStream("/scenario0/domainOntology.owl")) {
-            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.RDFXML);
-        }
+        linkedator = TestUtils.createLinkedator(getClass().getResourceAsStream(
+                "/scenario0/domainOntology.owl"), Lang.RDFXML);
 
         String microserviceOfPeopleDescription = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPeopleDescription, SemanticMicroserviceDescription.class);

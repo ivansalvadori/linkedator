@@ -1,5 +1,6 @@
 package br.ufsc.inf.lapesd.linkedator.test;
 
+import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.ModelBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.SemanticMicroserviceDescription;
 import br.ufsc.inf.lapesd.linkedator.links.NullLinkVerifier;
@@ -19,14 +20,12 @@ import java.io.InputStream;
 
 public class DoNotAddSelfLinksTest {
 
-    ModelBasedLinkedator linkedator;
+    Linkedator linkedator;
 
     @Before
     public void configure() throws IOException {
-        linkedator = new ModelBasedLinkedator();
-        try (InputStream in = this.getClass().getResourceAsStream("/doNotAddSelfLinks/domainOntology.owl")) {
-            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.RDFXML);
-        }
+        linkedator = TestUtils.createLinkedator(getClass().getResourceAsStream(
+                "/doNotAddSelfLinks/domainOntology.owl"), Lang.RDFXML);
 
         String microserviceOfPoliceReportDescription = IOUtils.toString(this.getClass().getResourceAsStream("/scenario0/microserviceOfPoliceReportDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription microservicesDescription = new Gson().fromJson(microserviceOfPoliceReportDescription, SemanticMicroserviceDescription.class);

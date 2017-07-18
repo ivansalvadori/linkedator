@@ -1,5 +1,6 @@
 package br.ufsc.inf.lapesd.linkedator.test;
 
+import br.ufsc.inf.lapesd.linkedator.Linkedator;
 import br.ufsc.inf.lapesd.linkedator.ModelBasedLinkedator;
 import br.ufsc.inf.lapesd.linkedator.links.NullLinkVerifier;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -15,14 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class TypeInferenceTest {
-    private ModelBasedLinkedator linkedator;
+    private Linkedator linkedator;
 
     @Before
     public void configure() throws IOException {
-        linkedator = new ModelBasedLinkedator();
-        try (InputStream in = this.getClass().getResourceAsStream("/scenario0/domainOntology.owl")) {
-            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.RDFXML);
-        }
+        linkedator = TestUtils.createLinkedator(getClass().getResourceAsStream(
+                "/scenario0/domainOntology.owl"), Lang.RDFXML);
     }
 
     @Test

@@ -16,8 +16,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class UpdateOntologiesTest {
 
@@ -25,10 +23,8 @@ public class UpdateOntologiesTest {
 
     @Before
     public void configure() throws IOException {
-        linkedator = new ModelBasedLinkedator();
-        try (InputStream in = this.getClass().getResourceAsStream("/updateOntologiesTest/domainOntology.ttl")) {
-            RDFDataMgr.read(linkedator.getOntologies(), in, Lang.TURTLE);
-        }
+        linkedator = TestUtils.createLinkedator(getClass().getResourceAsStream(
+                "/updateOntologiesTest/domainOntology.ttl"), Lang.TURTLE);
 
         String smdString = IOUtils.toString(this.getClass().getResourceAsStream("/updateOntologiesTest/microserviceOfPeopleDescription.jsonld"), "UTF-8");
         SemanticMicroserviceDescription smd = new Gson().fromJson(smdString, SemanticMicroserviceDescription.class);
