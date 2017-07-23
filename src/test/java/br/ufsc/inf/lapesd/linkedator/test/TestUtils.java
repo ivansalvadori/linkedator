@@ -22,7 +22,9 @@ public class TestUtils {
             "PREFIX rdf: <" + RDF.getURI() + ">\n" +
             "PREFIX rdfs: <" + RDFS.getURI() + ">\n" +
             "PREFIX owl: <" + OWL2.getURI() + ">\n" +
-            "PREFIX sch: <http://schema.org/>\n";
+            "PREFIX sch: <http://schema.org/>\n" +
+            "PREFIX city: <http://city.example.org/ns#>\n" +
+            "PREFIX state: <http://state.example.org/ns#>\n";
 
     public static ModelBasedLinkedator createLinkedator(@WillClose @Nonnull InputStream in,
                                                         @Nonnull Lang lang) throws IOException {

@@ -1,0 +1,19 @@
+{
+  "serverPort": "80",
+  "uriBase": "/",
+  "semanticResources": [
+    {
+      "entity": "http://state.example.org/ns#State",
+      "properties": [],
+      "uriTemplates": [
+        {
+          "method": "GET",
+          "uri": "/state/{uf}",
+          "parameters": {
+            "uf": "http://state.example.org/ns#code"
+          }
+        }
+      ]
+    }
+  ]
+}
