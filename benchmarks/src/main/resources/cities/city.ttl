@@ -1,0 +1,10 @@
+
+<http://192.168.10.1/city/0>
+        a                               <http://city.example.org/ns#City> ;
+        <http://city.example.org/ns#name>
+                "Alta Floresta D'Oeste" ;
+        <http://city.example.org/ns#state>
+                "RO" ;
+        <http://schema.org/mainEntity>  <http://192.168.10.1/city/0> ;
+        <http://www.w3.org/2002/07/owl#sameAs>
+                <http://city.example.org/data#0> , <http://192.168.10.1/city/0> .
