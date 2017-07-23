@@ -2,7 +2,6 @@ package br.ufsc.inf.lapesd.linkedator;
 
 import br.ufsc.inf.lapesd.linkedator.links.LinkVerifier;
 import br.ufsc.inf.lapesd.linkedator.templates.UriTemplateIndex;
-import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
@@ -10,14 +9,13 @@ import org.apache.jena.reasoner.rulesys.Rule;
 import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -26,16 +24,41 @@ import java.util.stream.Collectors;
 
 public class ModelBasedLinkedator implements Linkedator {
     private ReadWriteLock ontologiesLock = new ReentrantReadWriteLock();
-    private Model ontologies = ModelFactory.createDefaultModel();
-    private ReasonerBox reasonerBox = new ReasonerBox();
+    private Model ontologiesRaw = ModelFactory.createDefaultModel();
+    private InfModel ontologies;
+    private Reasoner ontologiesReasoner, dataReasoner;
     private UriTemplateIndex uriTemplateIndex = new UriTemplateIndex();
+    private final String tboxFile = "linkedator/tbox.rules";
+    private final String aboxFile = "linkedator/abox.rules";
+
+    public ModelBasedLinkedator() {
+        ontologiesReasoner = createReasoner(tboxFile, aboxFile);
+        ontologies = ModelFactory.createInfModel(ontologiesReasoner, ontologiesRaw);
+        dataReasoner = createReasoner(aboxFile);
+    }
+
+    private GenericRuleReasoner createReasoner(String... rulesFiles) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        List<Rule> rules = new ArrayList<>();
+        for (String rulesFile : rulesFiles) {
+            try (InputStream in = cl.getResourceAsStream(rulesFile);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+                rules.addAll(Rule.parseRules(Rule.rulesParserFromReader(reader)));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        GenericRuleReasoner gReasoner = new GenericRuleReasoner(rules);
+        gReasoner.setMode(GenericRuleReasoner.FORWARD);
+        return gReasoner;
+    }
 
     @Override
     public void createLinks(@Nonnull Model model, @Nonnull LinkVerifier linkVerifier) {
         ontologiesLock.readLock().lock();
         try {
             Model out = ModelFactory.createDefaultModel();
-            InfModel infModel = ModelFactory.createInfModel(getReasoner().bind(model.getGraph()));
+            InfModel infModel = ModelFactory.createInfModel(dataReasoner, model);
             for (ResIterator it = model.listSubjects(); it.hasNext(); ) {
                 Resource subject = it.next();
                 subject = subject.isAnon()
@@ -70,7 +93,8 @@ public class ModelBasedLinkedator implements Linkedator {
     public void updateOntologies(@Nonnull Model model) {
         ontologiesLock.writeLock().lock();
         try {
-            ontologies.removeAll().add(model);
+            ontologiesRaw.removeAll().add(model);
+            reasonOnOntologies();
         } finally {
             ontologiesLock.writeLock().unlock();
         }
@@ -80,24 +104,23 @@ public class ModelBasedLinkedator implements Linkedator {
     public void addToOntologies(@Nonnull Model model) {
         ontologiesLock.writeLock().lock();
         try {
-            ontologies.add(model);
+            ontologiesRaw.add(model);
+            reasonOnOntologies();
         } finally {
             ontologiesLock.writeLock().unlock();
         }
     }
 
+    private void reasonOnOntologies() {
+        ontologies.rebind();
+        ontologies.prepare();
+        dataReasoner = createReasoner(aboxFile).bindSchema(ontologies.getGraph());
+    }
+
+
     @Override
     public void register(@Nonnull SemanticMicroserviceDescription smd) {
         uriTemplateIndex.register(smd);
-    }
-
-    @Nonnull
-    public Reasoner getReasoner() {
-        return reasonerBox.get();
-    }
-
-    public void setReasoner(@Nonnull Reasoner reasoner) {
-        this.reasonerBox.set(reasoner);
     }
 
     private void addInferredTypes(Resource subject, Model out) {
@@ -138,31 +161,6 @@ public class ModelBasedLinkedator implements Linkedator {
                                     .addProperty(OWL2.sameAs, m.getResource()));
                         });
             }
-        }
-    }
-
-    private class ReasonerBox {
-        private Reasoner reasoner;
-
-        @Nonnull
-        public synchronized Reasoner get() {
-            if (reasoner == null) {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                try (InputStream in = cl.getResourceAsStream("linkedator/default.rules");
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-                    List<Rule> rules = Rule.parseRules(Rule.rulesParserFromReader(reader));
-                    GenericRuleReasoner gReasoner = new GenericRuleReasoner(rules);
-                    gReasoner.setMode(GenericRuleReasoner.FORWARD);
-                    reasoner = gReasoner.bindSchema(ontologies);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return reasoner;
-        }
-
-        public synchronized void set(@Nonnull Reasoner reasoner) {
-            this.reasoner = reasoner;
         }
     }
 }

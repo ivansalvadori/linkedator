@@ -1,0 +1,22 @@
+
+#--------------------------------------------------------
+# Subset of RDFS rules. Taken from apache-jena-core:3.3.0
+#--------------------------------------------------------
+
+#type inference by domain/range
+[rdfs2:  (?x ?p ?y), (?p rdfs:domain ?c) -> (?x rdf:type ?c)]
+[rdfs3:  (?x ?p ?y), (?p rdfs:range ?c) -> (?y rdf:type ?c)]
+
+#type inference from subClassOf
+[rdfs9:  (?x rdfs:subClassOf ?y), (?a rdf:type ?x) -> (?a rdf:type ?y)]
+
+#super-property inference from subPropertyOf
+[rdfs6:  (?a ?p ?b), (?p rdfs:subPropertyOf ?q) -> (?a ?q ?b)]
+
+#-------------------------------------------------------
+# Handcrafted rules for OWL inferences
+#-------------------------------------------------------
+
+#Infer statements from equivalentClass and equivalentProperty
+[eqProp: (?x ?p ?y), (?p owl:equivalentProperty ?q) -> (?x ?q ?y)]
+[eqClass: (?x rdf:type ?a), (?a owl:equivalentClass ?b) -> (?x rdf:type ?b)]
