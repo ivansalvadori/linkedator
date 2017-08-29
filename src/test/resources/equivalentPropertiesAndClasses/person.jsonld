@@ -1,5 +1,5 @@
 {
-  "@id": "10.1.1.1/people-microservice/13579",
+  "@id": "http://10.1.1.1/people-microservice/13579",
   "@type": "http://schema.org/Person",
    "http://ssp-ontology.com#numeroRgx": "13579",
    "http://newontology#rg": "13579",

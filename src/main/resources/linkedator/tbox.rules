@@ -1,0 +1,31 @@
+
+#--------------------------------------------------------
+# Subset of RDFS rules. Taken from apache-jena-core:3.3.0
+#--------------------------------------------------------
+
+
+#subClassOf transitivity
+[rdfs8:  (?a rdfs:subClassOf ?b), (?b rdfs:subClassOf ?c) -> (?a rdfs:subClassOf ?c)]
+[rdfs7:  (?a rdf:type rdfs:Class) -> (?a rdfs:subClassOf ?a)]
+
+#subPropertyOf transitivity
+[rdfs5a: (?a rdfs:subPropertyOf ?b), (?b rdfs:subPropertyOf ?c) -> (?a rdfs:subPropertyOf ?c)]
+[rdfs5b: (?a rdf:type rdf:Property) -> (?a rdfs:subPropertyOf ?a)]
+
+
+#These 2 actually came from owl.rules
+[rdfs2a: (?x rdfs:domain ?y), (?y rdfs:subClassOf ?z) -> (?x rdfs:domain ?z)]
+[rdfs3a: (?x rdfs:range  ?y), (?y rdfs:subClassOf ?z) -> (?x rdfs:range  ?z)]
+
+#-------------------------------------------------------
+# Handcrafted rules for OWL inferences
+#-------------------------------------------------------
+
+#We only care about symmetry of equivalentProperty and equivalentClass
+[epSym: (?P owl:equivalentProperty ?Q) -> (?Q owl:equivalentProperty ?P)]
+[ecSym: (?x owl:equivalentClass ?y) -> (?y owl:equivalentClass ?x)]
+
+#Infer a rdf:Property without importing all OWL axioms
+[objProp: (?P rdf:type owl:ObjectProperty) -> (?P rdf:type rdf:Property)]
+[datProp: (?P rdf:type owl:DatatypeProperty) -> (?P rdf:type rdf:Property)]
+

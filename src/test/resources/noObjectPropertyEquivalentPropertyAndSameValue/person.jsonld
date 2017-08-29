@@ -1,5 +1,5 @@
 {
-  "@id": "192.168.10.1/service/vitima?x=123&y=456",
+  "@id": "http://192.168.10.1/service/vitima?x=123&y=456",
   "@type": "http://person-ontology/Person",
    "http://person-ontology#driveLicense": "123",
    "http://person-ontology#taxId": "456",  
